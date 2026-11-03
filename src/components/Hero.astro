@@ -1,0 +1,265 @@
+---
+// HeroV2.astro: Hero section matching kushagrasingh.in with avatar, PT Serif headline, links, and card deck
+import CardDeck from './CardDeck.astro';
+import { VISHAN_DATA } from '../data/portfolioData';
+---
+
+<section id="hello" class="w-full pt-20 sm:pt-40 pb-20 sm:pb-48 flex flex-col items-center text-center px-4 relative z-10">
+  <span id="home" class="sr-only"></span>
+  <div class="max-w-4xl mx-auto flex flex-col items-center">
+    
+    <!-- Magnifying Glass Avatar Container -->
+    <div class="hero-reveal-1 relative group cursor-pointer select-none mb-6 sm:mb-8">
+      
+      <!-- Ambient Red/Warm Radial Glow Behind Magnifying Glass -->
+      <div class="mg-glow-intro absolute -inset-10 sm:-inset-14 rounded-full bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.34)_0%,rgba(251,146,60,0.2)_45%,transparent_72%)] blur-2xl sm:blur-3xl pointer-events-none -z-10 group-hover:scale-120 transition-transform duration-500"></div>
+
+      <!-- On-Page-Load Inspection Motion Rig (Tilts, goes farther & comes close) -->
+      <div class="mg-inspect-rig">
+        <!-- Interactive Hover Wrapper (20% reduced size: w-[90px] h-[90px] sm:w-[116px] sm:h-[116px]) -->
+        <div class="relative w-[90px] h-[90px] sm:w-[116px] sm:h-[116px] transition-transform duration-300 ease-out group-hover:scale-105 group-hover:-rotate-3">
+          
+          <!-- 1. Circular Optical Bezel / Metallic Frame -->
+          <div class="w-full h-full rounded-full p-[2.5px] sm:p-[3px] bg-gradient-to-br from-neutral-300 via-neutral-600 to-neutral-500 shadow-[0_12px_28px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.2)] relative z-10">
+            
+            <!-- Inner Rim Recess -->
+            <div class="w-full h-full rounded-full overflow-hidden bg-neutral-900 border-[1.5px] border-neutral-950 relative shadow-inner">
+              
+              <!-- On-Page-Load Optical Zoom Wrapper + Hover Zoom -->
+              <div class="mg-inner-zoom w-full h-full">
+                <img 
+                  src="/images/vishan-avatar.png" 
+                  alt="Vishan Dey" 
+                  class="w-full h-full object-cover group-hover:scale-115 transition-transform duration-500 ease-out"
+                  width="116"
+                  height="116"
+                  loading="eager"
+                />
+              </div>
+
+              <!-- Curved Specular Glass Glare (Optical Reflection Arc) -->
+              <div class="mg-glare-sweep absolute inset-0 rounded-full pointer-events-none bg-gradient-to-br from-white/30 via-white/5 to-transparent [mask-image:radial-gradient(ellipse_at_30%_25%,black_45%,transparent_75%)] group-hover:opacity-85 transition-opacity"></div>
+              
+              <!-- Lens Curvature Inner Shadow Vignette -->
+              <div class="absolute inset-0 rounded-full pointer-events-none shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"></div>
+            </div>
+          </div>
+
+          <!-- 2. Simplified Minimalist Handle (Toned-down matte dark stem, no bright distracting tip/ribs) -->
+          <div class="absolute top-1/2 left-1/2 w-0 h-0 pointer-events-none z-0 rotate-[-45deg]">
+            <div class="translate-y-[41px] sm:translate-y-[54px] -translate-x-1/2 flex flex-col items-center">
+              <!-- Subtle Muted Ferrule Ring -->
+              <div class="w-2 sm:w-2.5 h-1 sm:h-1.5 rounded-xs bg-neutral-500 border-t border-white/20"></div>
+              <!-- Clean Matte Stem -->
+              <div class="w-2 sm:w-2.5 h-7 sm:h-9 rounded-full bg-gradient-to-b from-neutral-700 to-neutral-900 border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.8)]"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Headline in PT Serif -->
+    <h1 class="hero-reveal-2 font-ptserif text-3xl sm:text-5xl md:text-6xl text-white font-normal tracking-tight leading-[1.15] max-w-3xl mb-5 sm:mb-6">
+      hey there! I'm Vishan, a full-stack developer that ships{' '}
+      <span class="inline-flex items-center justify-center relative align-baseline translate-y-[0.08em] select-none" aria-hidden="true">
+        <svg class="w-[0.78em] h-[0.78em] overflow-visible drop-shadow-[0_5px_9px_rgba(0,0,0,0.75)] hover:scale-110 hover:rotate-6 transition-transform duration-300 ease-out" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="heroStarClip">
+              <path d="M32 4 Q39 25 60 32 Q39 39 32 60 Q25 39 4 32 Q25 25 32 4 Z" />
+            </clipPath>
+            <linearGradient id="heroStarExtrude" x1="16" y1="16" x2="48" y2="60" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#D97706" />
+              <stop offset="50%" stop-color="#92400E" />
+              <stop offset="100%" stop-color="#451A03" />
+            </linearGradient>
+            <radialGradient id="heroStarSurface" cx="38%" cy="32%" r="65%" fx="28%" fy="24%">
+              <stop offset="0%" stop-color="#FFFFFF" />
+              <stop offset="18%" stop-color="#FEF9C3" />
+              <stop offset="45%" stop-color="#FDE047" />
+              <stop offset="75%" stop-color="#F59E0B" />
+              <stop offset="95%" stop-color="#B45309" />
+              <stop offset="100%" stop-color="#78350F" />
+            </radialGradient>
+            <linearGradient id="heroStarSpecular" x1="14" y1="10" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" />
+              <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.35" />
+              <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+            </linearGradient>
+            <radialGradient id="heroStarBounce" cx="70%" cy="70%" r="45%">
+              <stop offset="0%" stop-color="#FDE68A" stop-opacity="0.6" />
+              <stop offset="100%" stop-color="#B45309" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="heroStarRim" x1="8" y1="8" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9" />
+              <stop offset="45%" stop-color="#FEF08A" stop-opacity="0.6" />
+              <stop offset="80%" stop-color="#D97706" stop-opacity="0.4" />
+              <stop offset="100%" stop-color="#78350F" stop-opacity="0.8" />
+            </linearGradient>
+          </defs>
+          <!-- 1. 3D Extruded Depth Layer -->
+          <path d="M32 4 Q39 25 60 32 Q39 39 32 60 Q25 39 4 32 Q25 25 32 4 Z" transform="translate(0, 3)" fill="url(#heroStarExtrude)" stroke="#451A03" stroke-width="1" stroke-linejoin="round" />
+          <!-- 2. Main Clipped 3D Glossy Body -->
+          <g clip-path="url(#heroStarClip)">
+            <rect width="64" height="64" fill="url(#heroStarSurface)" />
+            <path d="M32 4 Q39 25 60 32 Q39 39 32 60 Q25 39 4 32 Q25 25 32 4 Z" fill="none" stroke="#78350F" stroke-width="4" opacity="0.45" transform="translate(-1.5, -1.5)" />
+            <rect width="64" height="64" fill="url(#heroStarBounce)" />
+            <path d="M32 4 L32 32 L4 32 Z" fill="white" fill-opacity="0.18" />
+            <path d="M32 60 L32 32 L60 32 Z" fill="#451A03" fill-opacity="0.22" />
+            <path d="M32 7 Q36.5 23 50 28.5 Q35 27 29.5 31.5 Q24 27 10 29.5 Q24.5 23 32 7 Z" fill="url(#heroStarSpecular)" />
+            <ellipse cx="26.5" cy="21.5" rx="4.2" ry="2" transform="rotate(-42 26.5 21.5)" fill="white" fill-opacity="0.88" />
+            <circle cx="24" cy="24.5" r="1.3" fill="white" fill-opacity="0.9" />
+          </g>
+          <!-- 3. Crisp 3D Bevel Rim Outline -->
+          <path d="M32 4 Q39 25 60 32 Q39 39 32 60 Q25 39 4 32 Q25 25 32 4 Z" fill="none" stroke="url(#heroStarRim)" stroke-width="1.2" stroke-linejoin="round" />
+        </svg>
+      </span>
+    </h1>
+
+    <!-- Contact & Social Links Subline -->
+    <div class="hero-reveal-3 flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-6 gap-y-2 text-sm sm:text-lg md:text-xl font-ptserif text-white/60 mb-8 sm:mb-12">
+      <a 
+        href={`mailto:${VISHAN_DATA.profile.email}`} 
+        class="hover:text-white hover:underline transition-colors decoration-white/40 underline-offset-4"
+      >
+        {VISHAN_DATA.profile.email}
+      </a>
+      <span class="text-white/20 select-none hidden sm:inline">•</span>
+      <a 
+        href="https://www.linkedin.com/in/vishandey" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        class="hover:text-blue-400 hover:underline transition-colors decoration-blue-400/40 underline-offset-4"
+      >
+        connect on linkedin
+      </a>
+      <span class="text-white/20 select-none hidden sm:inline">•</span>
+      <a 
+        href={VISHAN_DATA.profile.whatsappUrl} 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        class="hover:text-emerald-400 hover:underline transition-colors decoration-emerald-400/40 underline-offset-4"
+      >
+        whatsapp wire
+      </a>
+    </div>
+
+  </div>
+
+  <!-- The Signature Interactive 9-Card Overlapping Deck -->
+  <div class="hero-reveal-4 w-full">
+    <CardDeck />
+  </div>
+</section>
+
+<style>
+  @keyframes heroEntrance {
+    0% {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero-reveal-1 {
+    animation: heroEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.65s backwards;
+  }
+  .hero-reveal-2 {
+    animation: heroEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.75s backwards;
+  }
+  .hero-reveal-3 {
+    animation: heroEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.85s backwards;
+  }
+  .hero-reveal-4 {
+    animation: heroEntrance 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.95s backwards;
+  }
+
+  /* On-Page-Load Magnifying Glass Inspection Motion (Tilts, goes farther & comes close) */
+  @keyframes mgInspectMotion {
+    0% {
+      transform: scale(0.84) rotate(12deg) translate(8px, 6px);
+    }
+    34% {
+      transform: scale(1.14) rotate(-8deg) translate(-5px, -4px);
+    }
+    65% {
+      transform: scale(0.92) rotate(5deg) translate(4px, 2px);
+    }
+    84% {
+      transform: scale(1.04) rotate(-2deg) translate(-1px, -1px);
+    }
+    100% {
+      transform: scale(1) rotate(0deg) translate(0, 0);
+    }
+  }
+
+  /* Synchronized Optical Zoom Inside the Lens During Inspection */
+  @keyframes mgInnerZoomMotion {
+    0% {
+      transform: scale(0.94) translate(-4px, -3px);
+    }
+    34% {
+      transform: scale(1.26) translate(4px, 3px);
+    }
+    65% {
+      transform: scale(1.03) translate(-2px, -1px);
+    }
+    84% {
+      transform: scale(1.12) translate(1px, 1px);
+    }
+    100% {
+      transform: scale(1) translate(0, 0);
+    }
+  }
+
+  /* Specular Reflection Sweep as Lens Tilts */
+  @keyframes mgGlareSweepMotion {
+    0% {
+      opacity: 0.4;
+      transform: rotate(10deg) scale(0.95);
+    }
+    34% {
+      opacity: 0.95;
+      transform: rotate(-12deg) scale(1.05);
+    }
+    65% {
+      opacity: 0.65;
+      transform: rotate(6deg) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: rotate(0deg) scale(1);
+    }
+  }
+
+  .mg-inspect-rig {
+    animation: mgInspectMotion 2.4s cubic-bezier(0.22, 1, 0.36, 1) 0.65s backwards;
+    will-change: transform;
+  }
+
+  .mg-inner-zoom {
+    animation: mgInnerZoomMotion 2.4s cubic-bezier(0.22, 1, 0.36, 1) 0.65s backwards;
+    will-change: transform;
+  }
+
+  .mg-glare-sweep {
+    animation: mgGlareSweepMotion 2.4s cubic-bezier(0.22, 1, 0.36, 1) 0.65s backwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-reveal-1,
+    .hero-reveal-2,
+    .hero-reveal-3,
+    .hero-reveal-4,
+    .mg-inspect-rig,
+    .mg-inner-zoom,
+    .mg-glare-sweep {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>

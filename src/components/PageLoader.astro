@@ -1,0 +1,196 @@
+---
+// PageLoader.astro: Unique & fresh split-aperture page load animation
+// Blends precision engineering telemetry with warm editorial craft
+---
+
+<div 
+  id="page-loader" 
+  class="fixed inset-0 z-[100] flex items-center justify-center select-none overflow-hidden"
+  aria-hidden="true"
+>
+  <!-- Top Split Shutter Panel (Clean borderless to eliminate line remnants) -->
+  <div 
+    id="loader-shutter-top" 
+    class="absolute top-0 left-0 w-full h-1/2 bg-[#0e0e0e] transition-transform duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] will-change-transform z-10"
+  >
+    <!-- Subtle architectural hairline grid -->
+    <div class="absolute inset-0 bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-40"></div>
+  </div>
+
+  <!-- Bottom Split Shutter Panel (Clean borderless) -->
+  <div 
+    id="loader-shutter-bottom" 
+    class="absolute bottom-0 left-0 w-full h-1/2 bg-[#0e0e0e] transition-transform duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] will-change-transform z-10"
+  >
+    <!-- Subtle architectural hairline grid -->
+    <div class="absolute inset-0 bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-40"></div>
+  </div>
+
+  <!-- Center Stage Telemetry Content (Sits in front of shutters during load) -->
+  <div 
+    id="loader-content" 
+    class="relative z-20 flex flex-col items-center text-center px-6 transition-all duration-300"
+  >
+    <!-- Precision Odometer & Razor Hairline Progress Bar -->
+    <div class="w-56 sm:w-72 flex flex-col items-center gap-2">
+      <div class="w-full flex items-center justify-between text-xs font-mono text-white/50">
+        <span id="loader-status-text" class="text-white/60 lowercase tracking-wider">initializing...</span>
+        <span id="loader-odometer" class="text-white font-semibold tabular-nums tracking-widest">00%</span>
+      </div>
+
+      <!-- Razor Progress Line -->
+      <div class="w-full h-[2px] bg-white/10 rounded-full overflow-hidden relative">
+        <div 
+          id="loader-progress-bar" 
+          class="absolute top-0 left-0 h-full w-0 bg-gradient-to-r from-amber-400 via-rose-400 to-white transition-all duration-75"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Skip Hint: Reduced size and decreased padding from progress bar -->
+    <div class="mt-3.5 text-[8px] font-mono text-white/30 uppercase tracking-[0.2em]">
+      click or tap anywhere to skip
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Lock scrolling while loader is active */
+  html.is-loading-active,
+  body.is-loading-active {
+    overflow: hidden !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+  }
+
+  /* Shutter Open States: Overshoot by 5% and fade seam to prevent any subpixel white line remnant */
+  #page-loader.is-dismissing #loader-content {
+    opacity: 0;
+    transform: scale(0.96);
+    pointer-events: none;
+  }
+
+  #page-loader.is-dismissing #loader-shutter-top {
+    transform: translateY(-105%);
+  }
+
+  #page-loader.is-dismissing #loader-shutter-bottom {
+    transform: translateY(105%);
+  }
+
+  #page-loader.is-hidden {
+    display: none !important;
+  }
+</style>
+
+<script>
+  function initPageLoader() {
+    const loader = document.getElementById('page-loader');
+    if (!loader) return;
+
+    const shutterTop = document.getElementById('loader-shutter-top');
+    const shutterBottom = document.getElementById('loader-shutter-bottom');
+    const content = document.getElementById('loader-content');
+    const odometer = document.getElementById('loader-odometer');
+    const progressBar = document.getElementById('loader-progress-bar');
+    const statusText = document.getElementById('loader-status-text');
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      loader.classList.add('is-hidden');
+      return;
+    }
+
+    // Set scroll lock
+    document.documentElement.classList.add('is-loading-active');
+    document.body.classList.add('is-loading-active');
+
+    let currentPercent = 0;
+    let isCompleted = false;
+    let animationFrameId: number | null = null;
+    const startTime = performance.now();
+    const duration = 850; // Snappy 850ms duration for fresh, non-blocking feel
+
+    const statusMilestones = [
+      { at: 0, text: 'initializing...' },
+      { at: 25, text: 'reading systems...' },
+      { at: 55, text: 'assembling deck...' },
+      { at: 80, text: 'polishing craft...' },
+      { at: 98, text: 'ready ✦' }
+    ];
+
+    function updateOdometer(timestamp: number) {
+      if (isCompleted) return;
+
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Easing: rapid start with gentle glide into 100
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+      currentPercent = Math.floor(easedProgress * 100);
+
+      if (odometer) {
+        odometer.textContent = `${currentPercent.toString().padStart(2, '0')}%`;
+      }
+      if (progressBar) {
+        progressBar.style.width = `${currentPercent}%`;
+      }
+
+      // Update status copy
+      const matched = statusMilestones.filter(m => currentPercent >= m.at).pop();
+      if (matched && statusText && statusText.textContent !== matched.text) {
+        statusText.textContent = matched.text;
+      }
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(updateOdometer);
+      } else {
+        finishLoading();
+      }
+    }
+
+    function finishLoading() {
+      if (isCompleted) return;
+      isCompleted = true;
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+      if (odometer) odometer.textContent = '100%';
+      if (progressBar) progressBar.style.width = '100%';
+      if (statusText) statusText.textContent = 'ready ✦';
+
+      // Brief 120ms pause for visual closure, then trigger split shutter
+      setTimeout(() => {
+        loader?.classList.add('is-dismissing');
+
+        // Restore page scrolling as shutters split
+        setTimeout(() => {
+          document.documentElement.classList.remove('is-loading-active');
+          document.body.classList.remove('is-loading-active');
+        }, 300);
+
+        // Completely hide loader element after shutter transition completes
+        setTimeout(() => {
+          loader?.classList.add('is-hidden');
+        }, 750);
+      }, 120);
+    }
+
+    // Interactive skip triggers: click, touch, or any keydown skips instantly
+    loader.addEventListener('click', finishLoading);
+    loader.addEventListener('touchstart', finishLoading, { passive: true });
+    window.addEventListener('keydown', (e) => {
+      if (!isCompleted && (e.key === ' ' || e.key === 'Escape' || e.key === 'Enter')) {
+        finishLoading();
+      }
+    }, { once: true });
+
+    animationFrameId = requestAnimationFrame(updateOdometer);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPageLoader);
+  } else {
+    initPageLoader();
+  }
+</script>

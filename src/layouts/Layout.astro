@@ -1,0 +1,144 @@
+---
+// Layout.astro: Master dark minimalist layout inspired 1-to-1 by kushagrasingh.in
+// Typography: PT Serif + DM Sans, dark background #141414, smooth scrolling
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Vishan Dey — Full Stack Developer & Founder",
+  description = "hey there! I'm Vishan, a full-stack developer that ships. Creator of BhaiCode, Tomorrowly, Admium, and Founder at WyVE MEDIA."
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth bg-[#141414] text-white selection:bg-white selection:text-black">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="Vishan Dey" />
+    <meta name="theme-color" content="#141414" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <!-- Open Graph & Social Cards -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Favicon: Rounded Avatar Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Google Fonts: Archivo, PT Serif & DM Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+
+    <style is:global>
+      html,
+      body {
+        background-color: #141414 !important;
+        background: #141414 !important;
+        color: #ffffff !important;
+        font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        overflow-x: clip;
+      }
+
+      .font-ptserif {
+        font-family: 'PT Serif', Georgia, serif !important;
+      }
+
+      .font-dmsans {
+        font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+      }
+
+      /* Hide native scrollbar when Artcraft HUD ruler is active */
+      html[data-ruler="on"] {
+        scrollbar-width: none !important;
+      }
+      html[data-ruler="on"]::-webkit-scrollbar {
+        width: 0px !important;
+        height: 0px !important;
+        display: none !important;
+      }
+    </style>
+  </head>
+
+  <body class="relative min-h-screen bg-[#141414] text-white">
+    <!-- Subtle top ambient light glow -->
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none -z-10 blur-3xl"></div>
+
+    <slot />
+
+    <!-- Lenis Inertia Smooth Scroll Engine -->
+    <script>
+      import Lenis from 'lenis';
+
+      function initSmoothScroll() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          return;
+        }
+
+        const lenis = new Lenis({
+          duration: 1.2,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          orientation: 'vertical',
+          gestureOrientation: 'vertical',
+          smoothWheel: true,
+          wheelMultiplier: 1.0,
+          touchMultiplier: 1.0,
+          syncTouch: false,
+        });
+
+        function raf(time: number) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        (window as any).lenis = lenis;
+
+        // Pause scroll while loader is actively animating
+        if (document.documentElement.classList.contains('is-loading-active')) {
+          lenis.stop();
+          const checkLoader = setInterval(() => {
+            if (!document.documentElement.classList.contains('is-loading-active')) {
+              lenis.start();
+              clearInterval(checkLoader);
+            }
+          }, 60);
+        }
+
+        // Smoothly handle all hash jump anchors
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener('click', (e) => {
+            const href = anchor.getAttribute('href');
+            if (!href || href === '#') return;
+            const target = document.querySelector(href);
+            if (target) {
+              e.preventDefault();
+              const targetId = href.replace('#', '');
+              const offset = (targetId === 'hello' || targetId === 'home') ? 0 : -32;
+              lenis.scrollTo(target as HTMLElement, { offset, duration: 1.2 });
+            }
+          });
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSmoothScroll);
+      } else {
+        initSmoothScroll();
+      }
+    </script>
+  </body>
+</html>

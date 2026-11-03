@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Tomorrow Warm Oat Linen Surface (#f7f4ed) -->
+  <rect width="64" height="64" rx="15" fill="#f7f4ed"/>
+  <rect width="62" height="62" x="1" y="1" rx="14" stroke="#dfddd6" stroke-width="1"/>
+
+  <!-- Outer Golden Amber Sun Dome -->
+  <path d="M 7.99 28.18 C 7.99 15.37 18.66 5.05 32.0 5.05 C 45.34 5.05 56.01 15.37 56.01 28.18 Z" fill="#f3a018"/>
+
+  <!-- Inner Glowing Sun Arc -->
+  <path d="M 18.66 28.18 C 18.66 20.88 24.53 16.26 32.0 16.26 C 39.47 16.26 45.34 20.88 45.34 28.18 Z" fill="#fbb434"/>
+
+  <!-- Typographic Serif 'T' Horizon Structure -->
+  <path d="
+    M 7.99 30.49 
+    H 56.01 
+    V 38.85 
+    C 55.48 36.54 53.7 35.11 51.21 35.11 
+    H 34.31 
+    V 53.08 
+    C 34.31 56.63 36.98 57.17 38.23 57.17 
+    V 58.95 
+    H 25.77 
+    V 57.17 
+    C 27.02 57.17 29.69 56.63 29.69 53.08 
+    V 35.11 
+    H 12.79 
+    C 10.3 35.11 8.52 36.54 7.99 38.85 
+    Z" 
+    fill="#19191c"
+  />
+</svg>

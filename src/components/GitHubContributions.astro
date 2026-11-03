@@ -1,0 +1,395 @@
+---
+// GitHubContributions.astro: Real-time authentic GitHub contributions chart for @warhammered
+// Fetches live GitHub telemetry dynamically at SSR/build time with client-side real-time auto-sync
+import rawData from '../data/githubContributions.json';
+
+interface Day {
+  contributionCount: number;
+  date: string;
+  weekday: number;
+  color: string;
+}
+
+interface Week {
+  contributionDays: Day[];
+}
+
+let weeks: Week[] = rawData.data.user.contributionsCollection.contributionCalendar.weeks;
+let totalContributions: number = rawData.data.user.contributionsCollection.contributionCalendar.totalContributions;
+
+// SSR / Build-time live fetch with fallback
+try {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 2500);
+  const res = await fetch('https://github-contributions-api.jogruber.de/v4/warhammered?y=last', {
+    signal: controller.signal,
+  });
+  clearTimeout(timeoutId);
+
+  if (res.ok) {
+    const apiData = await res.json();
+    if (apiData?.contributions?.length && apiData?.total?.lastYear != null) {
+      totalContributions = apiData.total.lastYear;
+      const parsedWeeks: Week[] = [];
+      let currentWeek: Day[] = [];
+
+      for (const item of apiData.contributions) {
+        const d = new Date(item.date + 'T00:00:00Z');
+        const weekday = d.getUTCDay();
+
+        if (weekday === 0 && currentWeek.length > 0) {
+          parsedWeeks.push({ contributionDays: currentWeek });
+          currentWeek = [];
+        }
+
+        currentWeek.push({
+          contributionCount: item.count,
+          date: item.date,
+          weekday: weekday,
+          color: item.level === 0 ? '#ebedf0' : item.level === 1 ? '#0e4429' : item.level === 2 ? '#006d32' : item.level === 3 ? '#26a641' : '#39d353',
+        });
+      }
+
+      if (currentWeek.length > 0) {
+        parsedWeeks.push({ contributionDays: currentWeek });
+      }
+
+      weeks = parsedWeeks;
+    }
+  }
+} catch {
+  // Graceful fallback to static JSON
+}
+
+// Find peak day and compute active streak
+let maxCount = 0;
+let maxDate = '';
+let currentStreak = 0;
+
+const allDays = weeks.flatMap((w) => w.contributionDays);
+for (const day of allDays) {
+  if (day.contributionCount > maxCount) {
+    maxCount = day.contributionCount;
+    maxDate = day.date;
+  }
+}
+
+for (let i = allDays.length - 1; i >= 0; i--) {
+  if (allDays[i].contributionCount > 0) {
+    currentStreak++;
+  } else {
+    if (i === allDays.length - 1) continue;
+    break;
+  }
+}
+
+const formattedMaxDate = maxDate
+  ? new Date(maxDate + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
+  : 'Oct 2';
+
+// Identify unique month header markers across weeks
+const monthLabels: { label: string; weekIndex: number }[] = [];
+let lastMonth = -1;
+
+weeks.forEach((week, wIdx) => {
+  const firstDay = week.contributionDays[0];
+  if (firstDay) {
+    const d = new Date(firstDay.date + 'T00:00:00Z');
+    const m = d.getUTCMonth();
+    if (m !== lastMonth) {
+      lastMonth = m;
+      const label = d.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+      monthLabels.push({ label, weekIndex: wIdx });
+    }
+  }
+});
+---
+
+<section id="github-contributions" class="w-full px-4 sm:px-6 pb-8 sm:pb-14 select-none relative z-10">
+  <div class="max-w-4xl mx-auto">
+    <div class="w-full rounded-2xl overflow-hidden ios-glass-card p-5 sm:p-7 transition-all duration-300">
+      
+      <!-- 1. Header: Profile Telemetry & Overall Contribution Counter -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <!-- GitHub Icon Badge -->
+          <a
+            href="https://github.com/warhammered"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-10 h-10 rounded-xl bg-white/[0.08] border border-white/15 flex items-center justify-center hover:scale-105 hover:border-white/30 transition-all shrink-0 group"
+            title="View @warhammered on GitHub"
+          >
+            <svg class="w-5 h-5 text-white/90 group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+            </svg>
+          </a>
+
+          <div>
+            <div class="flex items-center gap-2">
+              <a
+                href="https://github.com/warhammered"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-dmsans font-semibold text-white text-base sm:text-lg hover:underline inline-flex items-center gap-1"
+              >
+                warhammered
+                <span class="text-xs text-white/50">↗</span>
+              </a>
+            </div>
+            <p class="font-dmsans text-xs text-white/50">
+              Real-time engineering activity & verified commits on GitHub
+            </p>
+          </div>
+        </div>
+
+        <!-- Telemetry Stats Pills -->
+        <div class="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <div class="px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 flex flex-col">
+            <span id="gh-total-contributions" class="font-mono text-xs sm:text-sm font-semibold text-white tracking-tight">
+              {totalContributions.toLocaleString()}
+            </span>
+            <span class="font-mono text-[9px] uppercase tracking-wider text-white/40">
+              contributions (1 yr)
+            </span>
+          </div>
+
+          <div class="px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 flex flex-col">
+            <span id="gh-current-streak" class="font-mono text-xs sm:text-sm font-semibold text-emerald-400 tracking-tight">
+              {currentStreak} days
+            </span>
+            <span class="font-mono text-[9px] uppercase tracking-wider text-white/40">
+              active streak
+            </span>
+          </div>
+
+          <div class="col-span-2 sm:col-span-1 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 flex flex-col">
+            <span id="gh-peak-day" class="font-mono text-xs sm:text-sm font-semibold text-amber-300 tracking-tight">
+              {maxCount} / day
+            </span>
+            <span id="gh-peak-subline" class="font-mono text-[9px] uppercase tracking-wider text-white/40">
+              peak ({formattedMaxDate})
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. The 52/53-Week Contribution Matrix -->
+      <div id="gh-chart-scroll" class="pt-5 overflow-x-auto pb-2 scrollbar-none" style="-webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; touch-action: pan-x pan-y;">
+        <div class="min-w-[680px]">
+          
+          <!-- Month Header Row -->
+          <div class="flex text-[10px] font-mono text-white/40 mb-2 pl-7 relative h-4">
+            {monthLabels.map((m) => (
+              <span
+                class="absolute"
+                style={`left: calc(28px + ${m.weekIndex * 12.8}px);`}
+              >
+                {m.label}
+              </span>
+            ))}
+          </div>
+
+          <!-- Grid: Days of Week on Left + Week Columns -->
+          <div class="flex items-start gap-2">
+            <!-- Day of Week Labels -->
+            <div class="flex flex-col justify-between text-[9px] font-mono text-white/35 h-[98px] pr-1 select-none">
+              <span class="leading-none pt-0.5">Sun</span>
+              <span class="leading-none">Mon</span>
+              <span class="leading-none">Tue</span>
+              <span class="leading-none">Wed</span>
+              <span class="leading-none">Thu</span>
+              <span class="leading-none">Fri</span>
+              <span class="leading-none pb-0.5">Sat</span>
+            </div>
+
+            <!-- Weeks Columns -->
+            <div class="flex gap-[3px] flex-1">
+              {weeks.map((week) => (
+                <div class="flex flex-col gap-[3px]">
+                  {week.contributionDays.map((day) => {
+                    const count = day.contributionCount;
+                    let levelClass = "bg-white/[0.05] border-white/[0.04]";
+                    if (count >= 40) {
+                      levelClass = "bg-[#39d353] border-[#39d353] shadow-[0_0_8px_rgba(57,211,83,0.55)]";
+                    } else if (count >= 20) {
+                      levelClass = "bg-[#26a641] border-[#26a641] shadow-[0_0_5px_rgba(38,166,65,0.4)]";
+                    } else if (count >= 8) {
+                      levelClass = "bg-[#006d32] border-[#006d32]";
+                    } else if (count > 0) {
+                      levelClass = "bg-[#0e4429] border-[#0e4429]";
+                    }
+
+                    const dateStr = new Date(day.date + 'T00:00:00Z').toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                      timeZone: 'UTC',
+                    });
+
+                    return (
+                      <div
+                        class={`gh-cell w-[10px] h-[10px] sm:w-[11px] sm:h-[11px] rounded-[2.5px] border transition-transform duration-150 hover:scale-140 hover:z-20 cursor-pointer relative group/cell ${levelClass}`}
+                        data-count={count}
+                        data-date={dateStr}
+                        data-date-iso={day.date}
+                      >
+                        <!-- Hover Floating Tooltip -->
+                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/cell:flex flex-col items-center pointer-events-none z-30 whitespace-nowrap">
+                          <div class="px-2.5 py-1 rounded-md bg-[#1f1f23] text-white border border-white/15 text-[10px] font-mono shadow-xl flex items-center gap-1.5">
+                            <span class="gh-tooltip-count font-semibold text-emerald-400">
+                              {count === 0 ? 'No' : count} {count === 1 ? 'contribution' : 'contributions'}
+                            </span>
+                            <span class="text-white/40">on {dateStr}</span>
+                          </div>
+                          <div class="w-1.5 h-1.5 bg-[#1f1f23] rotate-45 -mt-1 border-r border-b border-white/15"></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Footer Legend & Summary -->
+      <div class="flex flex-col sm:flex-row gap-2 sm:gap-0 sm:items-center sm:justify-between pt-4 mt-2 border-t border-white/10 text-[11px] font-mono text-white/40">
+        <div class="flex items-center gap-2">
+          <span class="hidden sm:inline">Verified commits, pull requests & code reviews</span>
+          <span class="sm:hidden">Verified activity on GitHub</span>
+        </div>
+
+        <div class="flex items-center gap-1.5 self-end sm:self-auto">
+          <span>Less</span>
+          <span class="w-[9px] h-[9px] rounded-[2px] bg-white/[0.05] border border-white/[0.04]"></span>
+          <span class="w-[9px] h-[9px] rounded-[2px] bg-[#0e4429] border border-[#0e4429]"></span>
+          <span class="w-[9px] h-[9px] rounded-[2px] bg-[#006d32] border border-[#006d32]"></span>
+          <span class="w-[9px] h-[9px] rounded-[2px] bg-[#26a641] border border-[#26a641]"></span>
+          <span class="w-[9px] h-[9px] rounded-[2px] bg-[#39d353] border border-[#39d353]"></span>
+          <span>More</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  // Real-time live GitHub contributions telemetry synchronizer
+  async function syncGitHubTelemetryLive() {
+    try {
+      const res = await fetch('https://github-contributions-api.jogruber.de/v4/warhammered?y=last');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!data?.contributions || data?.total?.lastYear == null) return;
+
+      const totalEl = document.getElementById('gh-total-contributions');
+      const streakEl = document.getElementById('gh-current-streak');
+      const peakEl = document.getElementById('gh-peak-day');
+      const peakSubEl = document.getElementById('gh-peak-subline');
+
+      if (totalEl) {
+        totalEl.textContent = Number(data.total.lastYear).toLocaleString();
+      }
+
+      const days = data.contributions;
+      let maxCount = 0;
+      let maxDate = '';
+
+      for (const d of days) {
+        if (d.count > maxCount) {
+          maxCount = d.count;
+          maxDate = d.date;
+        }
+      }
+
+      let streak = 0;
+      for (let i = days.length - 1; i >= 0; i--) {
+        if (days[i].count > 0) {
+          streak++;
+        } else {
+          if (i === days.length - 1) continue;
+          break;
+        }
+      }
+
+      if (streakEl) {
+        streakEl.textContent = `${streak} days`;
+      }
+
+      if (peakEl) {
+        peakEl.textContent = `${maxCount} / day`;
+      }
+
+      if (peakSubEl && maxDate) {
+        const dObj = new Date(maxDate + 'T00:00:00Z');
+        const formatted = dObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+        peakSubEl.textContent = `peak (${formatted})`;
+      }
+
+      // Update grid cells in real-time
+      const cells = document.querySelectorAll('#github-contributions .gh-cell');
+      const cellMap = new Map();
+      cells.forEach((cell) => {
+        const iso = cell.getAttribute('data-date-iso');
+        if (iso) cellMap.set(iso, cell);
+      });
+
+      for (const item of days) {
+        const cell = cellMap.get(item.date);
+        if (!cell) continue;
+
+        const count = item.count;
+        cell.setAttribute('data-count', String(count));
+
+        // Reset classes
+        cell.className = 'gh-cell w-[10px] h-[10px] sm:w-[11px] sm:h-[11px] rounded-[2.5px] border transition-transform duration-150 hover:scale-140 hover:z-20 cursor-pointer relative group/cell';
+
+        if (count >= 40) {
+          cell.classList.add('bg-[#39d353]', 'border-[#39d353]', 'shadow-[0_0_8px_rgba(57,211,83,0.55)]');
+        } else if (count >= 20) {
+          cell.classList.add('bg-[#26a641]', 'border-[#26a641]', 'shadow-[0_0_5px_rgba(38,166,65,0.4)]');
+        } else if (count >= 8) {
+          cell.classList.add('bg-[#006d32]', 'border-[#006d32]');
+        } else if (count > 0) {
+          cell.classList.add('bg-[#0e4429]', 'border-[#0e4429]');
+        } else {
+          cell.classList.add('bg-white/[0.05]', 'border-white/[0.04]');
+        }
+
+        const tooltipCount = cell.querySelector('.gh-tooltip-count');
+        if (tooltipCount) {
+          tooltipCount.textContent = `${count === 0 ? 'No' : count} ${count === 1 ? 'contribution' : 'contributions'}`;
+        }
+      }
+    } catch (err) {
+      console.warn('Real-time GitHub sync fallback to cached telemetry:', err);
+    }
+  }
+
+  // Trigger sync on load
+  function initGitHubTelemetry() {
+    syncGitHubTelemetryLive();
+
+    // On mobile / narrow viewports, initially scroll chart to right to reveal today & active streak
+    const chartScroll = document.getElementById('gh-chart-scroll');
+    if (chartScroll && window.innerWidth < 768) {
+      chartScroll.scrollLeft = chartScroll.scrollWidth;
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGitHubTelemetry);
+  } else {
+    initGitHubTelemetry();
+  }
+
+  // Auto-refresh whenever user returns to tab
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      syncGitHubTelemetryLive();
+    }
+  });
+</script>

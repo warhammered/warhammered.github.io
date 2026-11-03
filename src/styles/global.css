@@ -1,0 +1,170 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@300;400;500;700&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import "tailwindcss";
+@source "../";
+
+:root {
+  --bg-dark: #141414;
+  --bg: #141414;
+  --ink: #f2f1ee;
+  --ink-strong: #ffffff;
+  --accent: #facc15;
+  --accent-ink: #fde047;
+  --text-primary: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --font-serif: 'PT Serif', Georgia, serif;
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Archivo', 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Base resets */
+html {
+  font-family: var(--font-sans);
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+  -webkit-tap-highlight-color: transparent;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+button, a, [role="button"], .deck-card {
+  touch-action: manipulation;
+}
+
+/* Prevent accidental text selection and callouts on controls during long-press */
+button, [role="button"], .deck-card, .ios-glass-pill {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Tactile press feedback on touch devices */
+@media (pointer: coarse) {
+  a.ios-glass-pill:active,
+  button:active,
+  .deck-card:active {
+    transform: scale(0.97) !important;
+    transition: transform 100ms ease-out !important;
+  }
+}
+
+/* Lenis Smooth Scroll CSS */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  position: relative;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+}
+
+/* Typography Utility Classes */
+.font-ptserif {
+  font-family: var(--font-serif) !important;
+}
+
+.font-dmsans {
+  font-family: var(--font-sans) !important;
+}
+
+.artcraft-display-letter {
+  font-family: var(--font-display) !important;
+  font-weight: 620;
+  font-stretch: 118%;
+  letter-spacing: -0.02em;
+}
+
+/* Artcraft HUD Ruler Scrollbar Overrides & Odometer Digits */
+html[data-ruler="on"] {
+  scrollbar-width: none !important;
+}
+
+html[data-ruler="on"]::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+  display: none !important;
+}
+
+.ruler-digits {
+  height: 1em;
+  line-height: 1;
+  display: inline-flex;
+  overflow: hidden;
+}
+
+.ruler-digit-col {
+  flex-direction: column;
+  transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.2, 1);
+  display: flex;
+}
+
+.ruler-digit-col > span {
+  height: 1em;
+  display: block;
+}
+
+/* Fallback Scrollbar for Mobile / Non-Ruler Viewports */
+::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+
+
+/* Authentic Apple iOS Glass Morphism System */
+.ios-glass-bar {
+  background: rgba(18, 18, 20, 0.78) !important;
+  backdrop-filter: blur(28px) saturate(190%) contrast(105%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(105%) !important;
+  border-bottom: none !important;
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6) !important;
+}
+
+.ios-glass-pill {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%), rgba(22, 22, 26, 0.75) !important;
+  backdrop-filter: blur(24px) saturate(190%) contrast(105%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) contrast(105%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), 0 8px 24px -4px rgba(0, 0, 0, 0.4) !important;
+}
+
+.ios-glass-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(20, 20, 24, 0.76) !important;
+  backdrop-filter: blur(26px) saturate(190%) contrast(105%) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(190%) contrast(105%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 30px 70px -15px rgba(0, 0, 0, 0.85) !important;
+}

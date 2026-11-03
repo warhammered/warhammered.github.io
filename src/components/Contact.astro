@@ -1,0 +1,104 @@
+---
+// ContactV2.astro: Contact section & footer matching kushagrasingh.in
+import { VISHAN_DATA } from '../data/portfolioData';
+---
+
+<footer id="contact" class="w-full pt-16 sm:pt-32 pb-[max(3rem,calc(env(safe-area-inset-bottom,0px)+2rem))] sm:pb-16 px-4 sm:px-6">
+  <div class="max-w-4xl mx-auto flex flex-col items-center text-center">
+    
+    <div class="mb-8 sm:mb-10">
+      <h2 class="font-ptserif text-2xl sm:text-4xl text-white font-normal tracking-tight mb-3">
+        let's build together{' '}
+        <span class="inline-flex items-center justify-center relative align-baseline translate-y-[0.08em] select-none" aria-hidden="true">
+          <svg class="w-[0.78em] h-[0.78em] overflow-visible drop-shadow-[0_4px_8px_rgba(0,0,0,0.75)] hover:scale-110 hover:rotate-6 transition-transform duration-300 ease-out" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <clipPath id="footerStarClip">
+                <path d="M32 4 Q39 25 60 32 Q39 39 32 60 Q25 39 4 32 Q25 25 32 4 Z" />
+              </clipPath>
+              <linearGradient id="footerStarExtrude" x1="16" y1="16" x2="48" y2="60" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#D97706" />
+                <stop offset="50%" stop-color="#92400E" />
+                <stop offset="100%" stop-color="#451A03" />
+              </linearGradient>
+              <radialGradient id="footerStarSurface" cx="38%" cy="32%" r="65%" fx="28%" fy="24%">
+                <stop offset="0%" stop-color="#FFFFFF" />
+                <stop offset="18%" stop-color="#FEF9C3" />
+                <stop offset="45%" stop-color="#FDE047" />
+                <stop offset="75%" stop-color="#F59E0B" />
+                <stop offset="95%" stop-color="#B45309" />
+                <stop offset="100%" stop-color="#78350F" />
+              </radialGradient>
+              <linearGradient id="footerStarSpecular" x1="14" y1="10" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" />
+                <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.35" />
+                <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+              </linearGradient>
+              <radialGradient id="footerStarBounce" cx="70%" cy="70%" r="45%">
+                <stop offset="0%" stop-color="#FDE68A" stop-opacity="0.6" />
+                <stop offset="100%" stop-color="#B45309" stop-opacity="0" />
+              </radialGradient>
+              <linearGradient id="footerStarRim" x1="8" y1="8" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9" />
+                <stop offset="45%" stop-color="#FEF08A" stop-opacity="0.6" />
+                <stop offset="80%" stop-color="#D97706" stop-opacity="0.4" />
+                <stop offset="100%" stop-color="#78350F" stop-opacity="0.8" />
+              </linearGradient>
+            </defs>
+            <path d="M32 4 Q39 25 60 32 Q39 39 32 60 Q25 39 4 32 Q25 25 32 4 Z" transform="translate(0, 3)" fill="url(#footerStarExtrude)" stroke="#451A03" stroke-width="1" stroke-linejoin="round" />
+            <g clip-path="url(#footerStarClip)">
+              <rect width="64" height="64" fill="url(#footerStarSurface)" />
+              <path d="M32 4 Q39 25 60 32 Q39 39 32 60 Q25 39 4 32 Q25 25 32 4 Z" fill="none" stroke="#78350F" stroke-width="4" opacity="0.45" transform="translate(-1.5, -1.5)" />
+              <rect width="64" height="64" fill="url(#footerStarBounce)" />
+              <path d="M32 4 L32 32 L4 32 Z" fill="white" fill-opacity="0.18" />
+              <path d="M32 60 L32 32 L60 32 Z" fill="#451A03" fill-opacity="0.22" />
+              <path d="M32 7 Q36.5 23 50 28.5 Q35 27 29.5 31.5 Q24 27 10 29.5 Q24.5 23 32 7 Z" fill="url(#footerStarSpecular)" />
+              <ellipse cx="26.5" cy="21.5" rx="4.2" ry="2" transform="rotate(-42 26.5 21.5)" fill="white" fill-opacity="0.88" />
+              <circle cx="24" cy="24.5" r="1.3" fill="white" fill-opacity="0.9" />
+            </g>
+            <path d="M32 4 Q39 25 60 32 Q39 39 32 60 Q25 39 4 32 Q25 25 32 4 Z" fill="none" stroke="url(#footerStarRim)" stroke-width="1.2" stroke-linejoin="round" />
+          </svg>
+        </span>
+      </h2>
+      <p class="font-dmsans text-sm sm:text-base text-white/50 max-w-lg mx-auto">
+        Available for full-stack engineering commissions, high-performance web applications, and architectural leadership.
+      </p>
+    </div>
+
+    <!-- Direct Email Button -->
+    <a 
+      href={`mailto:${VISHAN_DATA.profile.email}`}
+      class="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full bg-white text-black font-dmsans font-bold text-sm sm:text-base hover:bg-neutral-200 transition-colors shadow-lg mb-8 sm:mb-10"
+    >
+      <span>{VISHAN_DATA.profile.email}</span>
+      <span>✉</span>
+    </a>
+
+    <!-- Social & Network Links -->
+    <div class="flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-3 text-xs sm:text-sm font-dmsans text-white/60 mb-8 sm:mb-10">
+      <a href="https://github.com/warhammered" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">
+        github ↗
+      </a>
+      <a href="https://www.linkedin.com/in/vishandey" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400 transition-colors">
+        linkedin ↗
+      </a>
+      <a href={VISHAN_DATA.profile.whatsappUrl} target="_blank" rel="noopener noreferrer" class="hover:text-emerald-400 transition-colors">
+        whatsapp ↗
+      </a>
+      <a href="https://bhaico.de" target="_blank" rel="noopener noreferrer" class="hover:text-purple-400 transition-colors">
+        bhaicode ↗
+      </a>
+      <a href="https://wyvemedia.com" target="_blank" rel="noopener noreferrer" class="hover:text-amber-300 transition-colors">
+        wyve media ↗
+      </a>
+      <a href="/vishan-dey-resume.pdf" target="_blank" rel="noopener noreferrer" class="hover:text-amber-200 transition-colors">
+        resume pdf ↗
+      </a>
+    </div>
+
+    <!-- Copyright -->
+    <div class="text-xs font-mono text-white/30 flex items-center justify-center">
+      <span>© 2026 Vishan Dey. All rights reserved.</span>
+    </div>
+
+  </div>
+</footer>

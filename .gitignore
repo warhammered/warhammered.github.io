@@ -1,0 +1,37 @@
+# build output
+dist/
+
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# environment variables
+.env
+.env.production
+.env.local
+
+# editor directories
+.vscode/
+.idea/
+.zed/
+
+# scripts & local generators
+scripts/
+
+# temporary and screenshot test files
+*.png.tmp
+screenshot-test.png
+projects-placeholder-check.png
+.wrangler/
+
+# macOS-specific files
+.DS_Store

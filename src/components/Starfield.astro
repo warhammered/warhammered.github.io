@@ -1,0 +1,94 @@
+---
+// Starfield.astro: Ambient cosmic starfield with twinkling stardust and soft atmospheric depth
+// Pure star particles with zero shooting meteor streaks
+interface Props {
+  count?: number;
+}
+
+const { count = 65 } = Astro.props;
+
+// Seeded pseudo-random generator for consistent hydration
+function seededRandom(seed: number) {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+// Generate organic twinkling stardust distributed across the hero & upper viewport
+const stars = Array.from({ length: count }, (_, i) => {
+  const seed = (i + 1) * 37.89;
+  const top = seededRandom(seed + 1) * 750;
+  const left = seededRandom(seed + 2) * 100;
+  const sizeRand = seededRandom(seed + 3);
+  const size = sizeRand > 0.85 ? 2.5 : sizeRand > 0.5 ? 1.8 : 1.2;
+  const duration = 2.2 + seededRandom(seed + 4) * 3.5;
+  const negDelay = -1 * (seededRandom(seed + 5) * 6.0);
+  const isGold = seededRandom(seed + 6) > 0.55;
+
+  return {
+    id: i,
+    top: `${top.toFixed(0)}px`,
+    left: `${left.toFixed(1)}%`,
+    size: `${size.toFixed(1)}px`,
+    duration: `${duration.toFixed(2)}s`,
+    delay: `${negDelay.toFixed(2)}s`,
+    isGold,
+  };
+});
+---
+
+<div 
+  class="starfield-container absolute top-0 left-0 right-0 h-[750px] sm:h-[850px] pointer-events-none select-none overflow-hidden z-0"
+  aria-hidden="true"
+>
+
+  <!-- Cosmic Stardust Particles -->
+  <div class="absolute inset-0">
+    {stars.map((s) => (
+      <div 
+        class={`star-particle absolute rounded-full ${s.isGold ? 'bg-amber-200 shadow-[0_0_6px_rgba(251,191,36,0.6)]' : 'bg-white shadow-[0_0_6px_rgba(255,255,255,0.7)]'}`}
+        style={{
+          top: s.top,
+          left: s.left,
+          width: s.size,
+          height: s.size,
+          animationDuration: s.duration,
+          animationDelay: s.delay,
+        }}
+      />
+    ))}
+  </div>
+</div>
+
+<style>
+  /* Soft radial vignette so stars gently dissolve into darker content */
+  .starfield-container {
+    -webkit-mask-image: radial-gradient(ellipse 95% 85% at 50% 15%, black 55%, transparent 95%);
+    mask-image: radial-gradient(ellipse 95% 85% at 50% 15%, black 55%, transparent 95%);
+  }
+
+  /* Gentle, organic twinkling pulse */
+  .star-particle {
+    opacity: 0.35;
+    animation: starPulse infinite ease-in-out alternate;
+    will-change: opacity, transform;
+  }
+
+  @keyframes starPulse {
+    0% {
+      opacity: 0.12;
+      transform: scale(0.75);
+    }
+    100% {
+      opacity: 0.85;
+      transform: scale(1.25);
+    }
+  }
+
+  /* Respect reduced-motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .star-particle {
+      animation: none !important;
+      opacity: 0.35 !important;
+    }
+  }
+</style>

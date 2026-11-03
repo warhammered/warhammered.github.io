@@ -1,0 +1,973 @@
+---
+// ArtcraftScrollbar.astro: Exact 1:1 implementation of getartcraft.com's HUD ruler scrollbar
+// Features:
+// - 60px frosted right-edge ruler rail with 101 ticks (1% minor ticks, 5% labeled major ticks)
+// - Page-load top-down tick draw-in cascade animation
+// - Scroll-velocity tick stretching near the active needle
+// - Glowing accent needle (#2d81ff) with 3-digit rolling odometer percentage readout (000% - 100%)
+// - Hover-intent / drag full-page zoom compression with visible viewport bracket & ghost jump line
+// - Click-to-jump and smooth pointer-capture drag scrubbing wired to Lenis
+// - Section headings choreography: Bottom Queue -> Curved Bezier Detach -> Vertical Rail Rider (with tick label proximity yield) -> Curved Bezier Top Flip into Active Heading & Compact Top Stack
+---
+
+<!-- Frosted Contrast Pools for Top Stack & Bottom Queue -->
+<div id="artcraft-ruler-pools" aria-hidden="true" class="pointer-events-none fixed inset-0 z-[39] hidden lg:block">
+  <div
+    id="artcraft-pool-top"
+    class="absolute top-0 right-0"
+    style="width: 380px; height: 260px; opacity: 0; backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); background-color: color-mix(in srgb, var(--bg, #141414) 80%, transparent); mask-image: radial-gradient(100% 100% at 100% 0%, black 38%, rgba(0, 0, 0, 0.82) 56%, rgba(0, 0, 0, 0.48) 72%, rgba(0, 0, 0, 0.2) 86%, rgba(0, 0, 0, 0.05) 94%, transparent 97%); -webkit-mask-image: radial-gradient(100% 100% at 100% 0%, black 38%, rgba(0, 0, 0, 0.82) 56%, rgba(0, 0, 0, 0.48) 72%, rgba(0, 0, 0, 0.2) 86%, rgba(0, 0, 0, 0.05) 94%, transparent 97%);"
+  ></div>
+  <div
+    id="artcraft-pool-bottom"
+    class="absolute bottom-0 right-0"
+    style="width: 380px; height: 200px; opacity: 0; backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); background-color: color-mix(in srgb, var(--bg, #141414) 80%, transparent); mask-image: radial-gradient(100% 100% at 100% 100%, black 38%, rgba(0, 0, 0, 0.82) 56%, rgba(0, 0, 0, 0.48) 72%, rgba(0, 0, 0, 0.2) 86%, rgba(0, 0, 0, 0.05) 94%, transparent 97%); -webkit-mask-image: radial-gradient(100% 100% at 100% 100%, black 38%, rgba(0, 0, 0, 0.82) 56%, rgba(0, 0, 0, 0.48) 72%, rgba(0, 0, 0, 0.2) 86%, rgba(0, 0, 0, 0.05) 94%, transparent 97%);"
+  ></div>
+</div>
+
+<!-- Right-Edge Interactive Ruler Scrollbar -->
+<div
+  id="artcraft-scrollbar"
+  role="scrollbar"
+  aria-controls="main"
+  aria-orientation="vertical"
+  aria-valuemin="0"
+  aria-valuemax="100"
+  aria-valuenow="0"
+  aria-label="Page position"
+  class="fixed inset-y-0 right-0 z-40 cursor-crosshair overflow-hidden select-none hidden lg:block"
+  style="width: 60px;"
+>
+  <!-- Frosted Rail Backdrop with Gamma Feather Mask -->
+  <div
+    aria-hidden="true"
+    class="absolute inset-0"
+    style="backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); background-color: color-mix(in srgb, var(--bg, #141414) 55%, transparent); mask-image: linear-gradient(to left, black 40%, rgba(0, 0, 0, 0.745) 47.5%, rgba(0, 0, 0, 0.53) 55%, rgba(0, 0, 0, 0.357) 62.5%, rgba(0, 0, 0, 0.22) 70%, rgba(0, 0, 0, 0.118) 77.5%, rgba(0, 0, 0, 0.047) 85%, rgba(0, 0, 0, 0.01) 92.5%, transparent 100%); -webkit-mask-image: linear-gradient(to left, black 40%, rgba(0, 0, 0, 0.745) 47.5%, rgba(0, 0, 0, 0.53) 55%, rgba(0, 0, 0, 0.357) 62.5%, rgba(0, 0, 0, 0.22) 70%, rgba(0, 0, 0, 0.118) 77.5%, rgba(0, 0, 0, 0.047) 85%, rgba(0, 0, 0, 0.01) 92.5%, transparent 100%);"
+  ></div>
+
+  <!-- 101 Ticks Container (0% to 100%) -->
+  <div id="artcraft-ticks-track" aria-hidden="true" class="absolute inset-x-0 top-0" style="height: 0px;"></div>
+
+  <!-- Zoomed Full-Page Viewport Bracket -->
+  <div
+    id="artcraft-viewport-bracket"
+    aria-hidden="true"
+    class="absolute inset-x-0 top-0 pointer-events-none"
+    style="height: 0px; opacity: 0;"
+  >
+    <div class="absolute inset-0 bg-[var(--ink,#f2f1ee)]" style="opacity: 0.1;"></div>
+    <span class="absolute inset-x-0 top-0 block bg-[var(--ink,#f2f1ee)]" style="height: 1px; opacity: 0.5;"></span>
+    <span class="absolute inset-x-0 bottom-0 block bg-[var(--ink,#f2f1ee)]" style="height: 1px; opacity: 0.5;"></span>
+  </div>
+
+  <!-- Active Scroll Needle + 3-Digit Odometer Readout -->
+  <div
+    id="artcraft-needle"
+    aria-hidden="true"
+    class="absolute inset-x-0 top-0 pointer-events-none"
+    style="height: 0px; opacity: 0;"
+  >
+    <span
+      class="absolute inset-x-0 block bg-[var(--accent,#facc15)]"
+      style="top: 0px; height: 1px; box-shadow: 0 0 8px var(--accent, #facc15);"
+    ></span>
+    <span
+      id="artcraft-needle-readout"
+      class="absolute whitespace-nowrap font-mono text-[var(--accent-ink,#fde047)]"
+      style="right: 2px; top: 4px; font-size: 9px; letter-spacing: 0.08em;"
+    >
+      <span class="ruler-digits">
+        <span class="ruler-digit-col" data-digit-col="0">
+          <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+        </span>
+        <span class="ruler-digit-col" data-digit-col="1">
+          <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+        </span>
+        <span class="ruler-digit-col" data-digit-col="2">
+          <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+        </span>
+      </span><span style="margin-left: 2px;">%</span>
+    </span>
+  </div>
+</div>
+
+<!-- Hover Ghost Jump Preview Line -->
+<div
+  id="artcraft-ghost-wrap"
+  aria-hidden="true"
+  class="pointer-events-none fixed inset-y-0 right-0 z-40 hidden lg:block"
+  style="width: 60px; height: 0px; opacity: 0; top: 0px;"
+>
+  <div
+    id="artcraft-ghost-line"
+    class="absolute right-0 block bg-[var(--ink,#f2f1ee)]"
+    style="top: -1.5px; width: 60px; height: 3px; opacity: 1;"
+  ></div>
+</div>
+
+<!-- Section Letters & Interactive Hit Targets Layer -->
+<div id="artcraft-sections-layer" class="pointer-events-none fixed inset-0 z-40 select-none hidden lg:block"></div>
+
+<script>
+  // Exact Artcraft Ruler Scrollbar & Section Choreography Engine
+  function initArtcraftScrollbar() {
+    const scrollbarEl = document.getElementById('artcraft-scrollbar');
+    const ticksTrackEl = document.getElementById('artcraft-ticks-track');
+    const bracketEl = document.getElementById('artcraft-viewport-bracket');
+    const needleEl = document.getElementById('artcraft-needle');
+    const readoutEl = document.getElementById('artcraft-needle-readout');
+    const ghostWrapEl = document.getElementById('artcraft-ghost-wrap');
+    const ghostLineEl = document.getElementById('artcraft-ghost-line');
+    const sectionsLayerEl = document.getElementById('artcraft-sections-layer');
+    const poolTopEl = document.getElementById('artcraft-pool-top');
+    const poolBottomEl = document.getElementById('artcraft-pool-bottom');
+
+    if (
+      !scrollbarEl ||
+      !ticksTrackEl ||
+      !bracketEl ||
+      !needleEl ||
+      !readoutEl ||
+      !ghostWrapEl ||
+      !ghostLineEl ||
+      !sectionsLayerEl ||
+      !poolTopEl ||
+      !poolBottomEl
+    ) {
+      return;
+    }
+
+    const digitCols = Array.from(readoutEl.querySelectorAll('.ruler-digit-col')) as HTMLElement[];
+
+    // Artcraft Tunable Constants (1:1 defaults from module 54227 & 74268)
+    const NAV_H = 48;
+    const LAYOUT = {
+      edgePad: 12,
+      railW: 60,
+      minorPct: 1,
+      labelPct: 5,
+      thresholdPct: 12,
+      headingPx: 34,
+      ridingPx: 20,
+      queuePx: 16,
+      topPad: 28,
+      currentGap: 26,
+      queueSlot: 20,
+      queuePad: 36,
+      textPad: 0,
+    };
+
+    const MOTION = {
+      flipZone: 200,
+      detachZone: 240,
+      stagger: 0.16,
+      arc: 28,
+      jumpDur: 1.25,
+      snapDelay: 400,
+      snapDur: 0.7,
+      introDur: 1.0,
+      introStagger: 0.01,
+      velRadius: 180,
+      velMax: 0.6,
+      zoomInDelay: 150,
+      zoomOutDelay: 150,
+      zoomLerp: 10,
+      dragLerp: 0.18,
+      heroLead: 80,
+      heroZone: 280,
+    };
+
+    const LOOK = {
+      minorAlpha: 0.4,
+      majorAlpha: 0.8,
+      labelAlpha: 0.5,
+      minorLen: 10,
+      majorLen: 20,
+      ghostAlpha: 1,
+      ghostThick: 3,
+      queueAlpha: 0.35,
+      yieldPad: 24,
+      needleFadePct: 3,
+      bracketAlpha: 0.1,
+      mapAlpha: 0.85,
+      poolAlpha: 1,
+      poolPad: 64,
+    };
+
+    const RULER_SECTIONS = [
+      { id: 'hello', label: 'HELLO', isHero: true },
+      { id: 'projects', label: 'PROJECTS', isHero: false },
+      { id: 'career', label: 'CAREER', isHero: false },
+      { id: 'contact', label: 'CONTACT', isHero: false },
+    ];
+
+    const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+    const easeInOutCubic = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
+
+    function rulerMap(vh: number, edgePad: number) {
+      const base = NAV_H + edgePad;
+      return {
+        base,
+        span: Math.max(1, vh - NAV_H - 2 * edgePad),
+        drift: (f: number) => base - f * (NAV_H + 2 * edgePad),
+      };
+    }
+
+    // State
+    let isActive = false;
+    const geom = { docH: 0, vh: 0, vw: 0 };
+    const rulerZoom = { target: 0, p: 0, dragging: false };
+    const railOccupancy: { spans: Array<{ top: number; bottom: number; k: number }> } = {
+      spans: [],
+    };
+
+    const state = {
+      vel: 0,
+      lastY: 0,
+      introDone: false,
+      introStartTime: 0,
+      prevDigits: [-1, -1, -1],
+      prevPct: -1,
+      readoutAbove: false,
+      zoomIntent: false,
+      zoomTimer: 0,
+      zoomWrote: false,
+      ghostActive: false,
+      ghostY: 0,
+      dragStartY: 0,
+      dragMoved: 0,
+      hoveredSection: -1,
+      snapSince: null as number | null,
+      snapping: false,
+      armed: true,
+      jumping: false,
+    };
+
+    // Build 101 Tick Elements
+    interface TickItem {
+      pct: number;
+      docY: number;
+      major: boolean;
+      alpha: number;
+      rowEl: HTMLDivElement;
+      lineEl: HTMLSpanElement;
+      labelEl: HTMLSpanElement | null;
+    }
+
+    const ticks: TickItem[] = [];
+    for (let p = 0; p <= 100 + 1e-6; p += LAYOUT.minorPct) {
+      const pct = Math.round(p * 100) / 100;
+      const major = Math.abs(pct % LAYOUT.labelPct) < 1e-6;
+      const alpha = major ? LOOK.majorAlpha : LOOK.minorAlpha;
+
+      const rowEl = document.createElement('div');
+      rowEl.className = 'absolute inset-x-0';
+      rowEl.style.top = '0px';
+      rowEl.style.height = '0px';
+
+      const lineEl = document.createElement('span');
+      lineEl.className = 'absolute block bg-[var(--ink,#f2f1ee)]';
+      lineEl.style.right = '0px';
+      lineEl.style.top = '0px';
+      lineEl.style.width = `${major ? LOOK.majorLen : LOOK.minorLen}px`;
+      lineEl.style.height = '1px';
+      lineEl.style.opacity = '0';
+      lineEl.style.transformOrigin = 'right center';
+      lineEl.style.transform = 'scaleX(0)';
+      rowEl.appendChild(lineEl);
+
+      let labelEl: HTMLSpanElement | null = null;
+      if (major) {
+        labelEl = document.createElement('span');
+        labelEl.className = 'absolute -translate-y-1/2 font-mono text-[var(--ink,#f2f1ee)]';
+        labelEl.style.right = `${LOOK.majorLen + 4}px`;
+        labelEl.style.top = '0px';
+        labelEl.style.fontSize = '9px';
+        labelEl.style.letterSpacing = '0.08em';
+        labelEl.style.opacity = String(LOOK.labelAlpha);
+        labelEl.textContent = String(pct);
+        rowEl.appendChild(labelEl);
+      }
+
+      ticksTrackEl.appendChild(rowEl);
+      ticks.push({ pct, docY: 0, major, alpha, rowEl, lineEl, labelEl });
+    }
+
+    // Build Section DOM Elements (Hit anchors + Individual character spans)
+    interface SectionItem {
+      id: string;
+      label: string;
+      index: number;
+      anchor: number;
+      bottom: number;
+      isHero: boolean;
+      hitEl: HTMLAnchorElement;
+      letters: HTMLSpanElement[];
+      hoverBlend: number;
+      flashUntil: number;
+    }
+
+    const sections: SectionItem[] = RULER_SECTIONS.map((sec, idx) => {
+      const hitEl = document.createElement('a');
+      hitEl.href = `#${sec.id}`;
+      hitEl.setAttribute('aria-label', `Jump to ${sec.label}`);
+      hitEl.className = 'pointer-events-auto absolute cursor-pointer';
+      hitEl.style.pointerEvents = 'none';
+      sectionsLayerEl.appendChild(hitEl);
+
+      const letters = sec.label.split('').map((ch) => {
+        const span = document.createElement('span');
+        span.setAttribute('aria-hidden', 'true');
+        span.className = 'artcraft-display-letter absolute top-0 left-0 whitespace-pre';
+        span.style.fontSize = `${LAYOUT.headingPx}px`;
+        span.style.lineHeight = '1';
+        span.style.opacity = '0';
+        span.style.willChange = 'transform, opacity';
+        span.style.textShadow = '0 0 4px var(--bg, #141414), 0 0 10px var(--bg, #141414)';
+        span.textContent = ch;
+        sectionsLayerEl.appendChild(span);
+        return span;
+      });
+
+      const item: SectionItem = {
+        id: sec.id,
+        label: sec.label,
+        index: idx,
+        anchor: 0,
+        bottom: 0,
+        isHero: sec.isHero,
+        hitEl,
+        letters,
+        hoverBlend: 0,
+        flashUntil: 0,
+      };
+
+      hitEl.addEventListener('pointerenter', () => {
+        state.hoveredSection = idx;
+      });
+      hitEl.addEventListener('pointerleave', () => {
+        if (state.hoveredSection === idx) state.hoveredSection = -1;
+      });
+      hitEl.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        item.flashUntil = performance.now() + 350;
+        state.armed = false;
+        state.jumping = true;
+
+        const targetEl = document.getElementById(sec.id);
+        const destY = sec.isHero
+          ? 0
+          : targetEl
+            ? targetEl.getBoundingClientRect().top + window.scrollY - NAV_H
+            : item.anchor - NAV_H;
+
+        const lenis = (window as any).lenis;
+        if (lenis) {
+          lenis.scrollTo(destY, {
+            duration: MOTION.jumpDur,
+            easing: easeOutExpo,
+            onComplete: () => {
+              state.jumping = false;
+            },
+          });
+        } else {
+          window.scrollTo({ top: destY, behavior: 'smooth' });
+          state.jumping = false;
+        }
+      });
+
+      return item;
+    });
+
+    // Measure per-letter glyph metrics in Archivo display font
+    interface LabelMetrics {
+      adv: number[];
+      cum: number[];
+      total: number;
+    }
+    let metricsMap: Record<string, LabelMetrics> = {};
+
+    function measureGlyphs() {
+      const probe = document.createElement('div');
+      probe.className = 'artcraft-display-letter';
+      probe.style.cssText =
+        'position:absolute;left:-9999px;top:0;visibility:hidden;white-space:pre;font-size:100px;line-height:1;';
+      document.body.appendChild(probe);
+
+      const nextMap: Record<string, LabelMetrics> = {};
+      for (const sec of sections) {
+        probe.textContent = '';
+        const spans = sec.label.split('').map((ch) => {
+          const s = document.createElement('span');
+          s.textContent = ch;
+          probe.appendChild(s);
+          return s;
+        });
+        const adv = spans.map((s) => s.getBoundingClientRect().width / 100);
+        const cum: number[] = [];
+        let total = 0;
+        for (const w of adv) {
+          cum.push(total);
+          total += w;
+        }
+        nextMap[sec.label] = { adv, cum, total };
+      }
+      probe.remove();
+      metricsMap = nextMap;
+    }
+
+    function updateGeometry() {
+      geom.docH = document.documentElement.scrollHeight;
+      geom.vh = window.innerHeight;
+      geom.vw = window.innerWidth;
+
+      ticksTrackEl!.style.height = `${geom.docH}px`;
+      for (const t of ticks) {
+        t.docY = (t.pct / 100) * geom.docH;
+        t.rowEl.style.top = `${t.docY}px`;
+      }
+
+      for (const sec of sections) {
+        const el = document.getElementById(sec.id);
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        sec.anchor = rect.top + window.scrollY;
+        sec.bottom = rect.bottom + window.scrollY;
+      }
+    }
+
+    // Check media query for desktop fine pointer
+    const mqPointer = window.matchMedia('(pointer: fine) and (hover: hover) and (min-width: 1024px)');
+    function syncMediaState() {
+      isActive = mqPointer.matches;
+      if (isActive) {
+        document.documentElement.dataset.ruler = 'on';
+        document.documentElement.dataset.rulerSide = 'right';
+        document.documentElement.style.setProperty('--ruler-rail', `${LAYOUT.railW}px`);
+        updateGeometry();
+        measureGlyphs();
+      } else {
+        delete document.documentElement.dataset.ruler;
+        delete document.documentElement.dataset.rulerSide;
+        document.documentElement.style.removeProperty('--ruler-rail');
+      }
+    }
+
+    syncMediaState();
+    mqPointer.addEventListener('change', syncMediaState);
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        measureGlyphs();
+        updateGeometry();
+      });
+    }
+
+    const ro = new ResizeObserver(() => {
+      if (isActive) updateGeometry();
+    });
+    ro.observe(document.body);
+    window.addEventListener('resize', () => {
+      if (isActive) updateGeometry();
+    });
+
+    // Re-arm snap on user scroll input
+    const rearmSnap = () => {
+      state.armed = true;
+    };
+    window.addEventListener('wheel', rearmSnap, { passive: true });
+    window.addEventListener('touchmove', rearmSnap, { passive: true });
+    window.addEventListener('keydown', rearmSnap);
+
+    // Hover / Drag Zoom & Scrubbing Interactions on Scrollbar Rail
+    function setZoomIntent(intent: boolean) {
+      window.clearTimeout(state.zoomTimer);
+      state.zoomTimer = window.setTimeout(
+        () => {
+          state.zoomIntent = intent;
+        },
+        intent ? MOTION.zoomInDelay : MOTION.zoomOutDelay
+      );
+    }
+
+    scrollbarEl.addEventListener('pointerenter', () => {
+      setZoomIntent(true);
+    });
+
+    scrollbarEl.addEventListener('pointerleave', () => {
+      state.ghostActive = false;
+      if (!rulerZoom.dragging) setZoomIntent(false);
+    });
+
+    scrollbarEl.addEventListener('pointermove', (e) => {
+      const map = rulerMap(geom.vh, LAYOUT.edgePad);
+      const clampedY = Math.max(map.base, Math.min(map.base + map.span, e.clientY));
+      const pct01 = clamp01((clampedY - map.base) / map.span);
+      state.ghostActive = true;
+      state.ghostY = clampedY;
+
+      if (rulerZoom.dragging) {
+        state.dragMoved = Math.max(state.dragMoved, Math.abs(e.clientY - state.dragStartY));
+        const targetScroll = pct01 * Math.max(1, geom.docH - geom.vh);
+        const lenis = (window as any).lenis;
+        if (lenis) {
+          lenis.scrollTo(targetScroll, { lerp: MOTION.dragLerp });
+        } else {
+          window.scrollTo({ top: targetScroll });
+        }
+      }
+    });
+
+    scrollbarEl.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      state.dragStartY = e.clientY;
+      state.dragMoved = 0;
+      rulerZoom.dragging = true;
+      scrollbarEl.setPointerCapture(e.pointerId);
+    });
+
+    const endDrag = (e: PointerEvent) => {
+      if (!rulerZoom.dragging) return;
+      rulerZoom.dragging = false;
+      const rect = scrollbarEl.getBoundingClientRect();
+      const inside =
+        e.clientX >= rect.left &&
+        e.clientX <= rect.right &&
+        e.clientY >= rect.top &&
+        e.clientY <= rect.bottom;
+      if (!inside) {
+        state.ghostActive = false;
+        setZoomIntent(false);
+      }
+    };
+
+    scrollbarEl.addEventListener('pointerup', endDrag);
+    scrollbarEl.addEventListener('pointercancel', endDrag);
+
+    scrollbarEl.addEventListener('click', (e) => {
+      if (state.dragMoved > 4) return;
+      const map = rulerMap(geom.vh, LAYOUT.edgePad);
+      const targetScroll =
+        clamp01((e.clientY - map.base) / map.span) * Math.max(1, geom.docH - geom.vh);
+      const lenis = (window as any).lenis;
+      if (lenis) {
+        const dist = Math.abs(targetScroll - window.scrollY);
+        lenis.scrollTo(targetScroll, {
+          duration: MOTION.jumpDur * (0.4 + 0.6 * Math.min(1, dist / (2.5 * geom.vh))),
+          easing: easeOutExpo,
+        });
+      } else {
+        window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+      }
+    });
+
+    // Main 60/120fps Animation Loop
+    let lastTime = performance.now();
+
+    function tick(now: number) {
+      requestAnimationFrame(tick);
+      if (!isActive || !geom.docH || !geom.vh) return;
+
+      // Wait for page loader to finish before playing tick cascade
+      if (!state.introStartTime) {
+        if (!document.documentElement.classList.contains('is-loading-active')) {
+          state.introStartTime = now;
+        }
+      }
+
+      const dt = Math.min((now - lastTime) / 1000, 0.1) || 0.016;
+      lastTime = now;
+
+      const scrollY = window.scrollY;
+      const maxScroll = Math.max(1, geom.docH - geom.vh);
+      const f = clamp01(scrollY / maxScroll);
+      const instVel = (scrollY - state.lastY) / dt;
+      state.lastY = scrollY;
+      state.vel += (instVel - state.vel) * (1 - Math.exp(-6 * dt));
+
+      const map = rulerMap(geom.vh, LAYOUT.edgePad);
+      const drift = map.drift(f);
+
+      // 1. Update Zoom State
+      rulerZoom.target = state.zoomIntent || rulerZoom.dragging ? 1 : 0;
+      rulerZoom.p += (rulerZoom.target - rulerZoom.p) * (1 - Math.exp(-MOTION.zoomLerp * dt));
+      if (rulerZoom.target === 0 && rulerZoom.p < 0.0005) rulerZoom.p = 0;
+      if (rulerZoom.target === 1 && rulerZoom.p > 0.9995) rulerZoom.p = 1;
+      const L = rulerZoom.p;
+      const zoomEase = easeInOutCubic(L);
+
+      // 2. Update Section Headings Choreography & Rail Occupancy
+      const thresholdY = (LAYOUT.thresholdPct / 100) * geom.vh;
+      const topStackBaseY = NAV_H + LAYOUT.topPad;
+      const bottomQueueBaseY = geom.vh - LAYOUT.queuePad;
+      const D = LAYOUT.headingPx;
+      const ridingScale = LAYOUT.ridingPx / D;
+      const queueScale = LAYOUT.queuePx / D;
+      const railCenterX = geom.vw - LAYOUT.railW / 2;
+
+      const secStates = sections.map((sec, idx) => {
+        const m = metricsMap[sec.label];
+        const rideLen = (m?.total ?? 0) * D * ridingScale;
+        const v = sec.anchor - scrollY + drift;
+        let flipP = 0;
+        let scrollFlip: { start: number; end: number } | null = null;
+        let detachP = 0;
+
+        if (sec.isHero) {
+          detachP = 1;
+          const start = MOTION.heroLead;
+          const span = Math.max(1, MOTION.heroZone);
+          flipP = clamp01((scrollY - start) / span);
+          scrollFlip = { start, end: start + span };
+        } else {
+          flipP = clamp01((thresholdY + MOTION.flipZone - v) / MOTION.flipZone);
+          if (sec.anchor - maxScroll > thresholdY) {
+            const start = Math.min(sec.bottom - geom.vh, maxScroll - 24);
+            const span = Math.max(24, maxScroll - start);
+            flipP = Math.max(flipP, clamp01((scrollY - start) / span));
+            scrollFlip = { start, end: maxScroll };
+          }
+        }
+
+        return { v, rideLen, flipP, scrollFlip, detachP, yq: bottomQueueBaseY };
+      });
+
+      // Compute bottom queue slots & detach progress
+      {
+        let queueIdx = 0;
+        for (let i = sections.length - 1; i >= 0; i--) {
+          if (sections[i].isHero) continue;
+          const st = secStates[i];
+          st.yq = bottomQueueBaseY - LAYOUT.queueSlot * queueIdx;
+          st.detachP = clamp01((st.yq + MOTION.detachZone - (st.v + st.rideLen)) / MOTION.detachZone);
+          queueIdx += 1 - st.detachP;
+        }
+      }
+
+      railOccupancy.spans.length = 0;
+
+      let flippedCount = 0;
+      let partialFlipSum = 0;
+      for (const st of secStates) {
+        if (st.flipP >= 1) flippedCount++;
+        else if (st.flipP > 0) partialFlipSum += st.flipP;
+      }
+
+      let maxTopPool = 0;
+      let maxBottomPool = 0;
+      for (let i = 0; i < secStates.length; i++) {
+        if (secStates[i].flipP > maxTopPool) maxTopPool = secStates[i].flipP;
+        if (!sections[i].isHero) {
+          const queuedAmt = 1 - secStates[i].detachP;
+          if (queuedAmt > maxBottomPool) maxBottomPool = queuedAmt;
+        }
+      }
+      poolTopEl!.style.opacity = String(LOOK.poolAlpha * maxTopPool);
+      poolBottomEl!.style.opacity = String(LOOK.poolAlpha * maxBottomPool);
+
+      const horizPose = (
+        m: LabelMetrics,
+        charIdx: number,
+        yPos: number,
+        scale: number,
+        alpha: number
+      ) => {
+        const charCenter = (m.cum[charIdx] + m.adv[charIdx] / 2) * D * scale;
+        const offsetRight = LAYOUT.railW + LAYOUT.textPad + (m.total * D * scale - charCenter);
+        return {
+          x: geom.vw - offsetRight,
+          y: yPos,
+          rot: 0,
+          scale,
+          alpha,
+        };
+      };
+
+      const vertRailPose = (m: LabelMetrics, charIdx: number, topY: number, alpha = LOOK.queueAlpha) => ({
+        x: railCenterX,
+        y: topY + (m.total - m.cum[charIdx] - m.adv[charIdx] / 2) * D * ridingScale,
+        rot: -90,
+        scale: ridingScale,
+        alpha,
+      });
+
+      for (let i = 0; i < sections.length; i++) {
+        const sec = sections[i];
+        const m = metricsMap[sec.label];
+        if (!m) continue;
+
+        const { v, rideLen, flipP, detachP, yq } = secStates[i];
+        const charCount = m.adv.length;
+
+        let progress = 1;
+        let reverseStagger = false;
+        let fromFn: (c: number) => { x: number; y: number; rot: number; scale: number; alpha: number };
+        let toFn: (c: number) => { x: number; y: number; rot: number; scale: number; alpha: number };
+
+        if (flipP > 0) {
+          progress = flipP;
+          reverseStagger = true;
+          fromFn = (c) => vertRailPose(m, c, sec.isHero ? topStackBaseY : v, sec.isHero ? 0 : LOOK.queueAlpha);
+          if (flipP >= 1) {
+            const compactT = i === flippedCount - 1 ? partialFlipSum : 1;
+            const targetY = topStackBaseY + i * LAYOUT.queueSlot + LAYOUT.currentGap * (1 - compactT);
+            const targetScale = 1 - (1 - queueScale) * compactT;
+            const targetAlpha = 1 - (1 - LOOK.queueAlpha) * compactT;
+            toFn = (c) => horizPose(m, c, targetY, targetScale, targetAlpha);
+          } else {
+            toFn = (c) => horizPose(m, c, topStackBaseY + i * LAYOUT.queueSlot + LAYOUT.currentGap, 1, 1);
+          }
+        } else if (detachP < 1) {
+          progress = detachP;
+          reverseStagger = true;
+          const rideStartY = yq - rideLen;
+          fromFn = (c) => horizPose(m, c, yq, queueScale, LOOK.queueAlpha);
+          toFn = (c) => vertRailPose(m, c, rideStartY, LOOK.queueAlpha);
+        } else {
+          progress = 1;
+          fromFn = toFn = (c) =>
+            sec.isHero
+              ? vertRailPose(m, c, topStackBaseY, 0)
+              : vertRailPose(m, c, v, LOOK.queueAlpha);
+        }
+
+        const stag = MOTION.stagger;
+        const totalSpan = 1 + (charCount - 1) * stag;
+        const mapY = map.base + ((sec.isHero ? 0 : sec.anchor) / geom.docH) * map.span;
+        const zoomBlend = sec.isHero ? zoomEase * Math.min(1, flipP) : zoomEase;
+
+        sec.hoverBlend += ((state.hoveredSection === i ? 1 : 0) - sec.hoverBlend) * (1 - Math.exp(-dt / 0.08));
+        const flashBlend = clamp01((sec.flashUntil - now) / 350);
+
+        let minX = Infinity;
+        let maxX = -Infinity;
+        let minY = Infinity;
+        let maxY = -Infinity;
+        let maxAlpha = 0;
+
+        for (let c = 0; c < charCount; c++) {
+          const spanEl = sec.letters[c];
+          if (!spanEl) continue;
+
+          const orderIdx = reverseStagger ? charCount - 1 - c : c;
+          const charT = clamp01(progress * totalSpan - orderIdx * stag);
+          const d = easeInOutCubic(charT);
+
+          const p0 = fromFn(c);
+          const p1 = toFn(c);
+          const ctrlX = (p0.x + p1.x) / 2 - MOTION.arc;
+          const ctrlY = (p0.y + p1.y) / 2;
+          const inv = 1 - d;
+
+          let x = inv * inv * p0.x + 2 * inv * d * ctrlX + d * d * p1.x;
+          let y = inv * inv * p0.y + 2 * inv * d * ctrlY + d * d * p1.y;
+          let rot = p0.rot + (p1.rot - p0.rot) * d;
+          let scale = p0.scale + (p1.scale - p0.scale) * d;
+          let alpha = p0.alpha + (p1.alpha - p0.alpha) * d;
+
+          if (zoomBlend > 0) {
+            const mp = horizPose(m, c, mapY, queueScale, LOOK.mapAlpha);
+            x += (mp.x - x) * zoomBlend;
+            y += (mp.y - y) * zoomBlend;
+            rot *= 1 - zoomBlend;
+            scale += (mp.scale - scale) * zoomBlend;
+            alpha += (mp.alpha - alpha) * zoomBlend;
+          }
+
+          spanEl.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) rotate(${rot}deg) scale(${scale})`;
+          spanEl.style.opacity = alpha <= 0.005 ? '0' : '1';
+
+          const effAlpha = alpha + (1 - alpha) * sec.hoverBlend;
+          const baseColor =
+            effAlpha >= 0.995
+              ? 'var(--ink-strong, #ffffff)'
+              : `color-mix(in srgb, var(--ink-strong, #ffffff) ${(100 * clamp01(effAlpha)).toFixed(1)}%, var(--bg, #141414))`;
+          spanEl.style.color =
+            flashBlend > 0.01
+              ? `color-mix(in srgb, var(--accent-ink, #fde047) ${(70 * flashBlend).toFixed(0)}%, ${baseColor})`
+              : baseColor;
+
+          if (alpha > maxAlpha) maxAlpha = alpha;
+
+          const halfW = (m.adv[c] * D * scale) / 2 + 2;
+          const halfH = (D * scale) / 2 + 2;
+          const isVert = Math.abs(rot) > 45;
+          const rx = isVert ? halfH : halfW;
+          const ry = isVert ? halfW : halfH;
+
+          if (x - rx < minX) minX = x - rx;
+          if (x + rx > maxX) maxX = x + rx;
+          if (y - ry < minY) minY = y - ry;
+          if (y + ry > maxY) maxY = y + ry;
+        }
+
+        const railWeight = sec.isHero ? 0 : detachP * (1 - flipP);
+        if (railWeight > 0.02) {
+          railOccupancy.spans.push({ top: v, bottom: v + rideLen, k: railWeight });
+        }
+
+        if (isFinite(minX)) {
+          sec.hitEl.style.left = `${minX - 2}px`;
+          sec.hitEl.style.top = `${minY - 2}px`;
+          sec.hitEl.style.width = `${maxX - minX + 4}px`;
+          sec.hitEl.style.height = `${maxY - minY + 4}px`;
+          sec.hitEl.style.pointerEvents =
+            maxAlpha > 0.05 && (!sec.isHero || flipP > 0.05) ? 'auto' : 'none';
+        }
+      }
+
+      // 3. Auto-Resolve Half-Flipped Headings When Scroll Rests
+      const lenis = (window as any).lenis;
+      const midFlipIdx = secStates.findIndex((s) => s.flipP > 0.04 && s.flipP < 0.96);
+      if (rulerZoom.dragging) state.armed = true;
+      if (state.snapping) {
+        if (midFlipIdx < 0) state.snapping = false;
+      } else if (
+        midFlipIdx >= 0 &&
+        state.armed &&
+        !state.jumping &&
+        Math.abs(state.vel) < 30 &&
+        lenis &&
+        !rulerZoom.dragging &&
+        rulerZoom.p < 0.3
+      ) {
+        if (state.snapSince === null) {
+          state.snapSince = now;
+        } else if (now - state.snapSince > MOTION.snapDelay) {
+          const st = secStates[midFlipIdx];
+          const sec = sections[midFlipIdx];
+          let targetSnapY: number;
+          if (st.scrollFlip) {
+            targetSnapY = st.flipP >= 0.5 ? st.scrollFlip.end + 4 : st.scrollFlip.start - 4;
+          } else {
+            const targetV = st.flipP >= 0.5 ? thresholdY - 4 : thresholdY + MOTION.flipZone + 4;
+            targetSnapY = sec.anchor + drift - targetV;
+          }
+          const clampedSnapY = Math.max(0, Math.min(maxScroll, targetSnapY));
+          state.snapping = true;
+          state.armed = false;
+          state.snapSince = null;
+          lenis.scrollTo(clampedSnapY, {
+            duration: MOTION.snapDur,
+            easing: easeInOutCubic,
+            onComplete: () => {
+              state.snapping = false;
+            },
+          });
+        }
+      } else {
+        state.snapSince = null;
+      }
+
+      // 4. Update Ruler Track Position, Needle, Odometer, Bracket, Ghost Line & Ticks
+      ticksTrackEl!.style.transform = `translate3d(0, ${-scrollY + drift}px, 0)`;
+
+      const needleY = map.base + f * map.span;
+      needleEl!.style.transform = `translate3d(0, ${needleY}px, 0)`;
+      needleEl!.style.opacity = String(clamp01(f / Math.max(0.001, LOOK.needleFadePct / 100)));
+
+      const shouldReadoutAbove = needleY > geom.vh - 26;
+      if (shouldReadoutAbove !== state.readoutAbove) {
+        state.readoutAbove = shouldReadoutAbove;
+        readoutEl!.style.top = shouldReadoutAbove ? '-14px' : '4px';
+      }
+
+      const pctInt = Math.round(f * 100);
+      if (pctInt !== state.prevPct) {
+        state.prevPct = pctInt;
+        scrollbarEl!.setAttribute('aria-valuenow', String(pctInt));
+        const padded = String(pctInt).padStart(3, '0');
+        for (let dIdx = 0; dIdx < 3; dIdx++) {
+          const digit = padded.charCodeAt(dIdx) - 48;
+          if (digit !== state.prevDigits[dIdx]) {
+            state.prevDigits[dIdx] = digit;
+            if (digitCols[dIdx]) {
+              digitCols[dIdx].style.transform = `translateY(${-digit}em)`;
+            }
+          }
+        }
+      }
+
+      // Viewport Bracket in Zoom Mode
+      bracketEl!.style.transform = `translate3d(0, ${map.base + (scrollY / geom.docH) * map.span}px, 0)`;
+      bracketEl!.style.height = `${(geom.vh / geom.docH) * map.span}px`;
+      bracketEl!.style.opacity = String(L);
+
+      // Ghost Line
+      if (state.ghostActive) {
+        ghostWrapEl!.style.transform = `translate3d(0, ${state.ghostY}px, 0)`;
+        ghostWrapEl!.style.opacity = String(LOOK.ghostAlpha * (0.2 + 0.8 * L));
+      } else {
+        ghostWrapEl!.style.opacity = '0';
+      }
+
+      // Ticks Intro Cascade + Velocity Stretch + Zoom Interpolation + Label Proximity Yield
+      const docNeedleY = f * geom.docH;
+      const velFactor = clamp01(Math.abs(state.vel) / 3000);
+      const shouldWriteZoom = L > 0 || state.zoomWrote;
+      const occSpans = railOccupancy.spans;
+      const elapsedIntro = state.introStartTime ? (now - state.introStartTime) / 1000 : 0;
+
+      for (let n = 0; n < ticks.length; n++) {
+        const tk = ticks[n];
+        const unzoomedViewY = tk.docY - scrollY + drift;
+        const zoomedViewY = map.base + (tk.pct / 100) * map.span;
+
+        if (shouldWriteZoom) {
+          tk.rowEl.style.transform =
+            L > 0 ? `translate3d(0, ${L * (zoomedViewY - unzoomedViewY)}px, 0)` : '';
+        }
+
+        if (tk.labelEl) {
+          const curY = unzoomedViewY + L * (zoomedViewY - unzoomedViewY);
+          let yieldFactor = 1;
+          if (LOOK.yieldPad > 0 && L < 1) {
+            for (const sp of occSpans) {
+              const dist = curY < sp.top ? sp.top - curY : curY > sp.bottom ? curY - sp.bottom : 0;
+              if (dist < LOOK.yieldPad) {
+                const yld = 1 - sp.k * (1 - dist / LOOK.yieldPad);
+                if (yld < yieldFactor) yieldFactor = yld;
+              }
+            }
+          }
+          tk.labelEl.style.opacity = String(LOOK.labelAlpha * (1 - (1 - yieldFactor) * (1 - L)));
+        }
+
+        // Intro draw-in cascade (power3.out)
+        let introScale = 1;
+        let introAlpha = 1;
+        if (!state.introDone) {
+          const tickDelay = n * MOTION.introStagger;
+          const tIntro = clamp01((elapsedIntro - tickDelay) / MOTION.introDur);
+          const easeOutCubic = 1 - Math.pow(1 - tIntro, 3);
+          introScale = easeOutCubic;
+          introAlpha = easeOutCubic;
+          if (n === ticks.length - 1 && tIntro >= 1) {
+            state.introDone = true;
+          }
+        }
+
+        const distToNeedle = Math.abs(tk.docY - docNeedleY);
+        if (distToNeedle < MOTION.velRadius && MOTION.velRadius > 0) {
+          const prox = 1 - distToNeedle / MOTION.velRadius;
+          const stretch = velFactor * prox * prox;
+          tk.lineEl.style.transform = `scaleX(${introScale * (1 + MOTION.velMax * stretch)})`;
+          tk.lineEl.style.opacity = String(introAlpha * Math.min(1, tk.alpha + 0.6 * stretch));
+        } else {
+          tk.lineEl.style.transform = `scaleX(${introScale})`;
+          tk.lineEl.style.opacity = String(introAlpha * tk.alpha);
+        }
+      }
+      state.zoomWrote = L > 0;
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initArtcraftScrollbar);
+  } else {
+    initArtcraftScrollbar();
+  }
+</script>

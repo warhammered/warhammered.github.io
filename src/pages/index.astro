@@ -1,0 +1,48 @@
+---
+// index.astro: Full Stack Developer Portfolio for Vishan Dey (Minimalist Dark Edition)
+import Layout from '../layouts/Layout.astro';
+import PageLoader from '../components/PageLoader.astro';
+import Navbar from '../components/Navbar.astro';
+import Starfield from '../components/Starfield.astro';
+import Hero from '../components/Hero.astro';
+import GitHubContributions from '../components/GitHubContributions.astro';
+import Projects from '../components/Projects.astro';
+import Experience from '../components/Experience.astro';
+import Contact from '../components/Contact.astro';
+import ArtcraftScrollbar from '../components/ArtcraftScrollbar.astro';
+---
+
+<Layout 
+  title="Vishan Dey — Full Stack Developer & Founder"
+  description="hey there! I'm Vishan, a full-stack developer that ships. Creator of BhaiCode, Tomorrowly, Admium, and Founder at WyVE MEDIA."
+>
+  <!-- Split Aperture Precision Page Loader -->
+  <PageLoader />
+
+  <!-- Top Navigation Bar -->
+  <Navbar />
+
+  <!-- Artcraft Right-Edge HUD Ruler Scrollbar & Section Choreography -->
+  <ArtcraftScrollbar />
+
+  <!-- Main Content Shell (overflow-x-clip preserves position: sticky scroll transitions) -->
+  <main id="main" class="w-full relative overflow-x-clip">
+    <!-- Ambient Twinkling Cosmic Starfield (Zero shooting meteors) -->
+    <Starfield />
+
+    <!-- Hero with PT Serif headline and signature 9-card interactive deck -->
+    <Hero />
+
+    <!-- Authentic GitHub Contributions Telemetry Chart -->
+    <GitHubContributions />
+
+    <!-- Projects Section -->
+    <Projects />
+
+    <!-- Experience Section -->
+    <Experience />
+
+    <!-- Contact & Footer Section -->
+    <Contact />
+  </main>
+</Layout>

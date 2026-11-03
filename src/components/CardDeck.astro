@@ -1,0 +1,554 @@
+---
+// CardDeck.astro: Signature 1-to-1 Interactive Overlapping Card Deck from kushagrasingh.in
+// Features: Overlapping negative margins, individual custom card art, hover lift, tilt, and sibling blur!
+---
+
+<div class="card-deck-container w-full max-w-[1400px] mx-auto py-4 sm:py-10 px-2 sm:px-4 select-none relative overflow-x-auto lg:overflow-visible no-scrollbar">
+  <div id="interactive-card-deck" class="flex items-center justify-start lg:justify-center min-w-[1050px] lg:min-w-0 py-6 sm:py-12 px-5 sm:px-4 transition-all duration-300">
+    
+        <!-- CARD 1: BHAICODE (AI-Native Compiler, AgentOS & WebAssembly VM) -->
+    <a 
+      href="https://bhaico.de"
+      target="_blank"
+      rel="noopener noreferrer"
+      data-card-index="0"
+      class="deck-card shrink-0 group relative w-[180px] sm:w-[210px] md:w-[230px] h-[300px] sm:h-[350px] md:h-[380px] rounded-2xl bg-gradient-to-b from-[#181326] via-[#100d1c] to-[#0a0712] border border-purple-500/30 p-3.5 sm:p-4.5 flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.85)] cursor-pointer transition-all duration-300 ease-out z-10"
+      style="--hover-rot: -3deg;"
+    >
+      <!-- Purple ambient glow -->
+      <div class="absolute -top-12 -left-12 w-32 h-32 bg-purple-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Header Row (Clean left-aligned with icon, zero top-right tags) -->
+      <div class="flex items-center gap-2.5 text-left relative z-10">
+        <div class="w-6 h-6 rounded-lg bg-[#151226] border border-purple-500/40 p-0.5 flex items-center justify-center shrink-0">
+          <img src="/images/bhaicode-icon.svg" alt="BhaiCode" class="w-full h-full object-contain" />
+        </div>
+        <span class="font-dmsans font-extrabold tracking-wider text-[11px] sm:text-xs text-white uppercase leading-none text-left">
+          BHAICODE
+        </span>
+      </div>
+
+      <!-- Real Visual Centerpiece: Actual IDE UI Frame -->
+      <div class="relative z-10 my-auto w-full h-[160px] sm:h-[190px] md:h-[210px] rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-[#0b0814]">
+        <img 
+          src="/images/bhaicode-landing.png" 
+          alt="BhaiCode Landing Page" 
+          class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+        />
+      </div>
+
+      <!-- Footer Info -->
+      <div class="relative z-10 pt-1.5 border-t border-purple-500/15 flex items-center justify-between text-[10px] font-mono text-purple-200/70">
+        <span>Lead Developer</span>
+        <span class="text-white/90">bhaico.de ↗</span>
+      </div>
+    </a>
+
+    <!-- CARD 2: WYVE MEDIA (High-Craft Digital Studio & Edge Infrastructure) -->
+    <a 
+      href="https://wyvemedia.com" 
+      target="_blank"
+      rel="noopener noreferrer"
+      data-card-index="1"
+      class="deck-card shrink-0 group relative w-[180px] sm:w-[210px] md:w-[230px] h-[300px] sm:h-[350px] md:h-[380px] rounded-2xl bg-gradient-to-b from-[#1c1810] via-[#120f09] to-[#090704] border border-amber-400/30 p-3.5 sm:p-4.5 flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.85)] -ml-14 sm:-ml-18 md:-ml-22 cursor-pointer transition-all duration-300 ease-out z-11"
+      style="--hover-rot: -1.5deg;"
+    >
+      <!-- Golden radial background sheen -->
+      <div class="absolute -top-10 -right-10 w-36 h-36 bg-amber-400/20 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Header Row (Clean left-aligned with icon, zero top-right tags) -->
+      <div class="flex items-center gap-2.5 text-left relative z-10">
+        <div class="w-6 h-6 rounded-lg bg-amber-400/10 border border-amber-400/30 p-0.5 flex items-center justify-center shrink-0 overflow-hidden">
+          <img src="/images/wyve-favicon.webp" alt="Wyve" class="w-full h-full object-contain" />
+        </div>
+        <span class="font-dmsans font-extrabold tracking-wider text-[11px] sm:text-xs text-white uppercase leading-none text-left">
+          WYVE MEDIA
+        </span>
+      </div>
+
+      <!-- Real Visual Centerpiece: Actual Studio Art from Wyve Platform -->
+      <div class="relative z-10 my-auto w-full h-[160px] sm:h-[190px] md:h-[210px] rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-[#0d0a06]">
+        <img 
+          src="/images/wyvemedia-landing.png" 
+          alt="WyVE MEDIA Landing Page" 
+          class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+        />
+      </div>
+
+      <!-- Footer Info -->
+      <div class="relative z-10 pt-1.5 border-t border-amber-400/15 flex items-center justify-between text-[10px] font-mono text-amber-200/70">
+        <span>FOUNDER</span>
+        <span class="text-amber-300">wyvemedia.com ↗</span>
+      </div>
+    </a>
+
+    <!-- CARD 3: ADMIUM (High-Velocity RTB Telemetry & Ad-Tech Platform) -->
+    <a 
+      href="https://admium-landing.pages.dev"
+      target="_blank"
+      rel="noopener noreferrer"
+      data-card-index="2"
+      class="deck-card shrink-0 group relative w-[180px] sm:w-[210px] md:w-[230px] h-[300px] sm:h-[350px] md:h-[380px] rounded-2xl bg-gradient-to-b from-[#0e1d17] via-[#091410] to-[#040a08] border border-emerald-400/30 p-3.5 sm:p-4.5 flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.85)] -ml-14 sm:-ml-18 md:-ml-22 cursor-pointer transition-all duration-300 ease-out z-12"
+      style="--hover-rot: 0deg;"
+    >
+      <!-- Neon Emerald Glow -->
+      <div class="absolute -top-10 -left-10 w-36 h-36 bg-emerald-400/20 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Header Row (Clean left-aligned with brand icon, zero top-right tags) -->
+      <div class="flex items-center gap-2.5 text-left relative z-10">
+        <div class="w-6 h-6 rounded-lg bg-[#0e1015] border border-emerald-400/35 p-0.5 flex items-center justify-center shrink-0 overflow-hidden">
+          <img src="/images/admium-icon.svg" alt="Admium" class="w-full h-full object-contain" />
+        </div>
+        <span class="font-dmsans font-extrabold tracking-wider text-[11px] sm:text-xs text-white uppercase leading-none text-left">
+          ADMIUM
+        </span>
+      </div>
+
+      <!-- Real Visual Centerpiece: Actual Admium Engine Artwork -->
+      <div class="relative z-10 my-auto w-full h-[160px] sm:h-[190px] md:h-[210px] rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-[#040d0a]">
+        <img 
+          src="/images/admium-landing.png" 
+          alt="Admium Marketing OS Landing Page" 
+          class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+        />
+      </div>
+
+      <!-- Footer Info -->
+      <div class="relative z-10 pt-1.5 border-t border-emerald-400/15 flex items-center justify-between text-[10px] font-mono text-emerald-200/70">
+        <span>Lead Developer</span>
+        <span class="text-white/90">admium-landing.pages.dev ↗</span>
+      </div>
+    </a>
+
+    <!-- CARD 4: TOMORROWLY (Sovereign Local-First Thought Workspace, P2P & Native AI MCP) -->
+    <a 
+      href="https://tomorrowly.pages.dev"
+      target="_blank"
+      rel="noopener noreferrer"
+      data-card-index="3"
+      class="deck-card shrink-0 group relative w-[180px] sm:w-[210px] md:w-[230px] h-[300px] sm:h-[350px] md:h-[380px] rounded-2xl bg-gradient-to-b from-[#1b1814] via-[#12100d] to-[#090806] border border-amber-400/30 p-3.5 sm:p-4.5 flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.85)] -ml-14 sm:-ml-18 md:-ml-22 cursor-pointer transition-all duration-300 ease-out z-13"
+      style="--hover-rot: 1.5deg;"
+    >
+      <!-- Warm Amber / Linen Sheen -->
+      <div class="absolute -top-10 -right-10 w-36 h-36 bg-amber-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Header Row (Clean left-aligned with icon, zero top-right tags) -->
+      <div class="flex items-center gap-2.5 text-left relative z-10">
+        <div class="w-6 h-6 rounded-lg bg-[#f7f4ed]/10 border border-amber-400/30 p-0.5 flex items-center justify-center shrink-0 overflow-hidden">
+          <img src="/images/tomorrowly-icon.svg" alt="Tomorrowly" class="w-full h-full object-contain" />
+        </div>
+        <span class="font-dmsans font-extrabold tracking-wider text-[11px] sm:text-xs text-white uppercase leading-none text-left">
+          TOMORROWLY
+        </span>
+      </div>
+
+      <!-- Real Visual Centerpiece: Actual Tomorrowly Brand Art -->
+      <div class="relative z-10 my-auto w-full h-[160px] sm:h-[190px] md:h-[210px] rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-[#0c0a08]">
+        <img 
+          src="/images/tomorrowly-hero.png" 
+          alt="Tomorrowly Landing Platform" 
+          class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+        />
+      </div>
+
+      <!-- Footer Info -->
+      <div class="relative z-10 pt-1.5 border-t border-amber-400/15 flex items-center justify-between text-[10px] font-mono text-amber-200/70">
+        <span>Lead Developer</span>
+        <span class="text-white/90">TAURI v2 + RUST ↗</span>
+      </div>
+    </a>
+
+<!-- CARD 5: GITHUB (Deep dark navy/cyan card with digital 3D isometric foliage) -->
+    <a 
+      href="https://github.com/warhammered" 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      data-card-index="4"
+      class="deck-card shrink-0 group relative w-[180px] sm:w-[210px] md:w-[230px] h-[300px] sm:h-[350px] md:h-[380px] rounded-2xl bg-gradient-to-b from-[#0E1326] via-[#1A1838] to-[#14232B] border border-white/10 p-5 flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.7)] -ml-14 sm:-ml-18 md:-ml-22 cursor-pointer transition-all duration-300 ease-out z-14"
+      style="--hover-rot: -1.5deg;"
+    >
+      <div class="font-dmsans font-black text-xs tracking-wider uppercase text-white/90">
+        GITHUB
+      </div>
+
+      <!-- 3D Geometric Blocks & Foliage -->
+      <div class="my-auto relative flex items-center justify-center">
+        <div class="w-14 sm:w-16 h-14 sm:h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-emerald-400 rotate-12 flex items-center justify-center shadow-lg">
+          <svg class="w-8 sm:w-9 h-8 sm:h-9 text-white -rotate-12" fill="currentColor" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="font-mono text-[10px] text-cyan-200/60 tracking-wider">
+        @warhammered ↗
+      </div>
+    </a>
+
+    
+<!-- CARD 6: TECH STACK (Production Architecture, Systems & Runtimes - Moved to the Right) -->
+    <a 
+      href="#projects"
+      data-card-index="5"
+      class="deck-card shrink-0 group relative w-[180px] sm:w-[210px] md:w-[230px] h-[300px] sm:h-[350px] md:h-[380px] rounded-2xl bg-gradient-to-b from-[#131722] via-[#0d1017] to-[#08090d] border border-cyan-400/20 p-4 sm:p-5 flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.85)] -ml-14 sm:-ml-18 md:-ml-22 cursor-pointer transition-all duration-300 ease-out z-15"
+      style="--hover-rot: 1deg;"
+    >
+      <!-- Cyan ambient glow -->
+      <div class="absolute -top-10 -right-10 w-36 h-36 bg-cyan-400/15 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Header Row (Clean left-aligned with icon, zero top-right tags) -->
+      <div class="flex items-center gap-2.5 text-left relative z-10">
+        <div class="w-6 h-6 rounded-lg bg-cyan-400/10 border border-cyan-400/30 p-1 flex items-center justify-center shrink-0 shadow-inner">
+          <svg class="w-3.5 h-3.5 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="font-dmsans font-extrabold tracking-wider text-[11px] sm:text-xs text-white uppercase leading-none text-left">
+          TECH STACK
+        </span>
+      </div>
+
+      <!-- Centerpiece: Tactile 3D Isometric Hardware Architecture Stack -->
+      <div class="relative z-10 my-auto py-2 flex flex-col items-center justify-center w-full select-none">
+        <div class="w-full h-[155px] sm:h-[185px] md:h-[200px] relative flex items-center justify-center">
+          <svg class="w-full h-full max-w-[210px] drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)] overflow-visible" viewBox="0 0 200 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="stackPlate1" x1="35" y1="42" x2="165" y2="42" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#312e81" stop-opacity="0.9" />
+                <stop offset="50%" stop-color="#1e1b4b" stop-opacity="0.95" />
+                <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9" />
+              </linearGradient>
+              <linearGradient id="stackPlate2" x1="35" y1="84" x2="165" y2="84" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#064e3b" stop-opacity="0.85" />
+                <stop offset="50%" stop-color="#065f46" stop-opacity="0.95" />
+                <stop offset="100%" stop-color="#0f172a" stop-opacity="0.85" />
+              </linearGradient>
+              <linearGradient id="stackPlate3" x1="35" y1="126" x2="165" y2="126" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#0c4a6e" stop-opacity="0.85" />
+                <stop offset="50%" stop-color="#082f49" stop-opacity="0.95" />
+                <stop offset="100%" stop-color="#020617" stop-opacity="0.9" />
+              </linearGradient>
+            </defs>
+
+            <!-- Vertical Data Conduits (connecting bus lines) -->
+            <path d="M 35 44 L 35 128" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.4" />
+            <path d="M 165 44 L 165 128" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.4" />
+            <path d="M 100 70 L 100 154" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4 2" opacity="0.6" />
+
+            <!-- LAYER 3 (BASE): Distributed Edge & Data -->
+            <g class="transition-transform duration-500 group-hover:translate-y-[4px]">
+              <ellipse cx="100" cy="158" rx="55" ry="12" fill="#000000" opacity="0.75" />
+              <path d="M 35 126 L 35 133 L 100 159 L 100 152 Z" fill="#0369a1" opacity="0.6" />
+              <path d="M 100 152 L 100 159 L 165 133 L 165 126 Z" fill="#082f49" opacity="0.9" />
+              <path d="M 100 100 L 165 126 L 100 152 L 35 126 Z" fill="url(#stackPlate3)" stroke="#38bdf8" stroke-width="1" stroke-opacity="0.5" />
+              <text x="100" y="129" text-anchor="middle" font-family="monospace" font-size="8.5" font-weight="700" fill="#bae6fd" letter-spacing="1">CLOUDFLARE • SQL</text>
+              <circle cx="55" cy="122" r="2" fill="#38bdf8" opacity="0.8" />
+              <circle cx="145" cy="122" r="2" fill="#38bdf8" opacity="0.8" />
+            </g>
+
+            <!-- LAYER 2 (MIDDLE): Application Frameworks & Runtimes -->
+            <g class="transition-transform duration-500">
+              <ellipse cx="100" cy="116" rx="50" ry="10" fill="#000000" opacity="0.5" />
+              <path d="M 35 84 L 35 91 L 100 117 L 100 110 Z" fill="#047857" opacity="0.6" />
+              <path d="M 100 110 L 100 117 L 165 91 L 165 84 Z" fill="#064e3b" opacity="0.9" />
+              <path d="M 100 58 L 165 84 L 100 110 L 35 84 Z" fill="url(#stackPlate2)" stroke="#34d399" stroke-width="1" stroke-opacity="0.6" />
+              <text x="100" y="87" text-anchor="middle" font-family="monospace" font-size="8.5" font-weight="700" fill="#a7f3d0" letter-spacing="1">ASTRO • REACT • TAURI</text>
+              <circle cx="55" cy="80" r="2" fill="#34d399" opacity="0.8" />
+              <circle cx="145" cy="80" r="2" fill="#34d399" opacity="0.8" />
+            </g>
+
+            <!-- LAYER 1 (TOP): Systems Core & Compilers -->
+            <g class="transition-transform duration-500 group-hover:translate-y-[-4px]">
+              <ellipse cx="100" cy="74" rx="50" ry="10" fill="#000000" opacity="0.5" />
+              <path d="M 35 42 L 35 49 L 100 75 L 100 68 Z" fill="#4338ca" opacity="0.6" />
+              <path d="M 100 68 L 100 75 L 165 49 L 165 42 Z" fill="#1e1b4b" opacity="0.9" />
+              <path d="M 100 16 L 165 42 L 100 68 L 35 42 Z" fill="url(#stackPlate1)" stroke="#818cf8" stroke-width="1.2" stroke-opacity="0.8" />
+              <text x="100" y="45" text-anchor="middle" font-family="monospace" font-size="9" font-weight="800" fill="#e0e7ff" letter-spacing="1">RUST • TYPESCRIPT</text>
+              <circle cx="100" cy="20" r="2.5" fill="#c7d2fe" />
+              <circle cx="55" cy="38" r="2" fill="#818cf8" />
+              <circle cx="145" cy="38" r="2" fill="#818cf8" />
+            </g>
+          </svg>
+        </div>
+      </div>
+
+
+
+      <!-- Footer Info -->
+      <div class="relative z-10 pt-1.5 border-t border-cyan-400/15 flex items-center justify-between text-[10px] font-mono text-cyan-200/70">
+        <span>ARCHITECTURE</span>
+        <span class="text-white/90">POLYGLOT ↗</span>
+      </div>
+    </a>
+
+    <!-- CARD 7: LINKEDIN (Electric Blue Workspace Illustration) -->
+    <a 
+      href="https://www.linkedin.com/in/vishandey" 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      data-card-index="6"
+      class="deck-card shrink-0 group relative w-[180px] sm:w-[210px] md:w-[230px] h-[300px] sm:h-[350px] md:h-[380px] rounded-2xl bg-gradient-to-b from-[#1C4DB5] via-[#2167DC] to-[#123E98] border border-white/20 p-5 flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.7)] -ml-14 sm:-ml-18 md:-ml-22 cursor-pointer transition-all duration-300 ease-out text-white z-16"
+      style="--hover-rot: -1deg;"
+    >
+      <div class="font-dmsans font-black text-xs tracking-wider uppercase text-white/90">
+        LINKEDIN
+      </div>
+
+      <!-- Isometric Workspace Illustration -->
+      <div class="my-auto relative flex items-center justify-center">
+        <div class="w-14 sm:w-16 h-14 sm:h-16 rounded-xl bg-white/10 border border-white/20 flex flex-col items-center justify-center gap-1 shadow-inner">
+          <div class="w-7 sm:w-8 h-4 sm:h-5 rounded bg-blue-300/40 border border-white/30"></div>
+          <div class="w-3 sm:w-4 h-1.5 rounded-full bg-white/40"></div>
+          <div class="w-5 sm:w-6 h-1 bg-white/20"></div>
+        </div>
+      </div>
+
+      <div class="font-mono text-[10px] text-blue-200/70 tracking-wider">
+        CONNECT ON LINKEDIN ↗
+      </div>
+    </a>
+
+    <!-- CARD 8: CONTACT (Warm Amber / Yellow Envelope Mail card) -->
+    <a 
+      href="#contact" 
+      data-card-index="7"
+      class="deck-card shrink-0 group relative w-[180px] sm:w-[210px] md:w-[230px] h-[300px] sm:h-[350px] md:h-[380px] rounded-2xl bg-gradient-to-b from-[#F2B93B] via-[#E2A627] to-[#C98F17] border border-white/30 p-5 flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.7)] -ml-14 sm:-ml-18 md:-ml-22 cursor-pointer transition-all duration-300 ease-out text-stone-900 z-17"
+      style="--hover-rot: 2deg;"
+    >
+      <div class="font-dmsans font-black text-xs tracking-wider uppercase text-stone-900/90">
+        CONTACT
+      </div>
+
+      <!-- 3D Embossed Envelope Mail Symbol -->
+      <div class="my-auto flex items-center justify-center">
+        <svg class="w-16 sm:w-20 h-14 sm:h-16 text-stone-900/80 drop-shadow-md" viewBox="0 0 64 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="6" width="56" height="36" rx="4" fill="rgba(255,255,255,0.2)"/>
+          <path d="M4 10L32 30L60 10"/>
+        </svg>
+      </div>
+
+      <div class="font-mono text-[10px] text-stone-900/70 tracking-wider font-bold">
+        SAY HELLO ↗
+      </div>
+    </a>
+
+    <!-- CARD 9: RESUME (Dark Graphite with Giant Typography "Re / su / me") -->
+    <a 
+      href="/vishan-dey-resume.pdf" target="_blank" rel="noopener noreferrer"
+      data-card-index="8"
+      class="deck-card shrink-0 group relative w-[180px] sm:w-[210px] md:w-[230px] h-[300px] sm:h-[350px] md:h-[380px] rounded-2xl bg-[#1C1C1E] border border-white/10 p-5 flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.7)] -ml-14 sm:-ml-18 md:-ml-22 cursor-pointer transition-all duration-300 ease-out z-18"
+      style="--hover-rot: -2deg;"
+    >
+      <!-- Top Title -->
+      <div class="font-dmsans font-black text-xs tracking-wider uppercase text-white/50">
+        CV / DOSSIER
+      </div>
+
+      <!-- Giant Stacked Typography matching Kushagra's "Re su me" -->
+      <div class="my-auto leading-[0.85] font-ptserif font-bold text-4xl sm:text-5xl md:text-6xl text-stone-600/60 select-none tracking-tight">
+        <div>Re</div>
+        <div>su</div>
+        <div>me</div>
+      </div>
+
+      <div class="font-mono text-[10px] text-white/60 tracking-wider flex items-center justify-between">
+        <span>DOWNLOAD</span>
+        <span>PDF ↗</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<style>
+  /* Authentic Apple iOS Glass Card Foundation */
+  .deck-card {
+    backdrop-filter: blur(24px) saturate(190%) contrast(105%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(190%) contrast(105%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    box-shadow: 
+      inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.35),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 25px 60px rgba(0, 0, 0, 0.75) !important;
+    transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1), 
+                filter 450ms cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 450ms cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 450ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transform-style: preserve-3d;
+    will-change: transform, filter, box-shadow;
+  }
+
+  /* Specular Apple Glass Sheen across the top edge */
+  .deck-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.02) 45%, transparent 80%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Mobile-first base: full swipeable pointer events and smooth momentum touch scrolling */
+  .card-deck-container {
+    pointer-events: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
+  }
+
+  #interactive-card-deck {
+    pointer-events: auto;
+    touch-action: pan-x pan-y;
+  }
+
+  .deck-card {
+    pointer-events: auto;
+    touch-action: pan-x pan-y;
+  }
+
+  /* Desktop hover and sibling depression: ONLY when mouse/trackpad is present */
+  @media (hover: hover) and (pointer: fine) {
+    .card-deck-container,
+    #interactive-card-deck {
+      pointer-events: none;
+    }
+
+    .deck-card {
+      pointer-events: auto;
+    }
+
+    /* Sibling Depression: Non-hovered cards sink down and blur */
+    .card-deck-container.has-active-card .deck-card {
+      filter: blur(6px) opacity(0.35);
+      transform: translateY(14px) scale(0.93);
+    }
+
+    /* Active Lift with Multi-Stage iOS Glass Shadows */
+    .card-deck-container.has-active-card .deck-card.is-active-hover {
+      filter: blur(0px) opacity(1) !important;
+      transform: translateY(-56px) scale(1.14) rotate(calc(var(--hover-rot, 0deg) * 1.5)) !important;
+      z-index: 50 !important;
+      border-color: rgba(255, 255, 255, 0.32) !important;
+      box-shadow: 
+        inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.6),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 50px 115px -15px rgba(0, 0, 0, 0.98),
+        0 25px 55px -10px rgba(0, 0, 0, 0.85),
+        0 0 40px -5px rgba(255, 255, 255, 0.16) !important;
+    }
+
+    .card-deck-container:has(.deck-card:hover) .deck-card {
+      filter: blur(6px) opacity(0.35);
+      transform: translateY(14px) scale(0.93);
+    }
+
+    .card-deck-container .deck-card:hover {
+      filter: blur(0px) opacity(1) !important;
+      transform: translateY(-56px) scale(1.14) rotate(calc(var(--hover-rot, 0deg) * 1.5)) !important;
+      z-index: 50 !important;
+      border-color: rgba(255, 255, 255, 0.32) !important;
+      box-shadow: 
+        inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.6),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 50px 115px -15px rgba(0, 0, 0, 0.98),
+        0 25px 55px -10px rgba(0, 0, 0, 0.85),
+        0 0 40px -5px rgba(255, 255, 255, 0.16) !important;
+    }
+  }
+
+  /* Tactile feedback on touch tap */
+  @media (pointer: coarse) {
+    .deck-card:active {
+      transform: scale(0.97) !important;
+      transition: transform 100ms ease-out !important;
+    }
+  }
+
+  /* Hide scrollbar on horizontal swipe */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
+
+<script>
+  function initCardDeckInteractions() {
+    const container = document.querySelector('.card-deck-container');
+    const cards = document.querySelectorAll('.deck-card') as NodeListOf<HTMLElement>;
+
+    if (!container || !cards.length) return;
+
+    // Strictly isolate 3D mouse hover & tilt effects to fine desktop pointers
+    // On touch/mobile devices, prevent cards from getting stuck in blurred state
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      return;
+    }
+
+    cards.forEach((card) => {
+      card.addEventListener('mouseenter', () => {
+        container.classList.add('has-active-card');
+        card.classList.add('is-active-hover');
+      });
+
+      card.addEventListener('mousemove', (e: MouseEvent) => {
+        if (!card.classList.contains('is-active-hover')) return;
+        const rect = card.getBoundingClientRect();
+
+        // Strict boundary containment: no hover outside of card bounds even slightly
+        if (
+          e.clientX < rect.left || 
+          e.clientX > rect.right || 
+          e.clientY < rect.top || 
+          e.clientY > rect.bottom
+        ) {
+          card.classList.remove('is-active-hover');
+          card.style.transform = '';
+          const anyActive = document.querySelector('.deck-card.is-active-hover');
+          if (!anyActive) {
+            container.classList.remove('has-active-card');
+          }
+          return;
+        }
+
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        // Subtle tactile 3D tilt (-6deg to +6deg)
+        const rotX = ((y - centerY) / centerY) * -6;
+        const rotY = ((x - centerX) / centerX) * 6;
+        const baseRotStr = card.style.getPropertyValue('--hover-rot') || '0deg';
+        const baseRot = parseFloat(baseRotStr) || 0;
+
+        card.style.transform = `translateY(-56px) scale(1.14) perspective(900px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) rotate(${(baseRot * 1.5).toFixed(2)}deg)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.classList.remove('is-active-hover');
+        card.style.transform = '';
+        const anyActive = document.querySelector('.deck-card.is-active-hover');
+        if (!anyActive) {
+          container.classList.remove('has-active-card');
+        }
+      });
+    });
+
+    container.addEventListener('mouseleave', () => {
+      container.classList.remove('has-active-card');
+      cards.forEach((c) => {
+        c.classList.remove('is-active-hover');
+        c.style.transform = '';
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCardDeckInteractions);
+  } else {
+    initCardDeckInteractions();
+  }
+</script>
